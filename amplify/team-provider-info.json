@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-tlg2web-dev-174231-authRole",
+      "UnauthRoleArn": "arn:aws:iam::304701460251:role/amplify-tlg2web-dev-174231-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::304701460251:role/amplify-tlg2web-dev-174231-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-tlg2web-dev-174231-deployment",
+      "UnauthRoleName": "amplify-tlg2web-dev-174231-unauthRole",
+      "StackName": "amplify-tlg2web-dev-174231",
+      "StackId": "arn:aws:cloudformation:eu-west-1:304701460251:stack/amplify-tlg2web-dev-174231/22f45a70-cd27-11eb-8bc3-066ade55e1ad",
+      "AmplifyAppId": "d3qssm92pp8yib"
+    }
+  }
+}
