@@ -41,6 +41,7 @@ import {
   FUNC_ROADMAP_SIZE_INFO,
   FUNC_ROADMAP_GROUP_HEIGHT,
 } from './core/standards'
+import { withAuthenticator } from '@aws-amplify/ui-react'
 
 //////////////////////////////////////////////////////////////////////////
 /// APP COMPONENT ////////////////////////////////////////////////////////
@@ -660,4 +661,4 @@ class App extends React.Component{
   }
 }
 
-export default App
+export default withAuthenticator(App);

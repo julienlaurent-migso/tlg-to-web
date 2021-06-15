@@ -10,6 +10,11 @@
       "StackName": "amplify-tlg2web-dev-174231",
       "StackId": "arn:aws:cloudformation:eu-west-1:304701460251:stack/amplify-tlg2web-dev-174231/22f45a70-cd27-11eb-8bc3-066ade55e1ad",
       "AmplifyAppId": "d3qssm92pp8yib"
+    },
+    "categories": {
+      "auth": {
+        "tlg2web7760279b": {}
+      }
     }
   }
 }

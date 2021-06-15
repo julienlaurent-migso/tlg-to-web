@@ -1,1 +1,10 @@
-{}
+{
+  "auth": {
+    "tlg2web7760279b": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}

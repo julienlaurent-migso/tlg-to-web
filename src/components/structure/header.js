@@ -1,6 +1,7 @@
 import React from 'react'
 import {APP_LOGO, APP_NAV} from '../../core/constants'
 import {NavLink} from 'react-router-dom'
+import { AmplifySignOut } from '@aws-amplify/ui-react'
 
 ////////////////////////
 /// HEADER COMPONENT ///
@@ -62,7 +63,16 @@ class Header extends React.Component{
                 {/* NAVIGATION */}
                 <div className="flexCenterStrech headerMenuBlock">
                     {appNavLinks}
+
+                    {/* SIGN OUT */}
+                    <div id="LoginSignOut">
+                        <AmplifySignOut />
+                    </div>
+                
                 </div>
+
+                
+                
 
             </header>
         )

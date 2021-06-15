@@ -177,6 +177,10 @@ a:hover{text-decoration: none;}
   opacity:1;
 }
 
+amplify-sign-out {
+  width: 50px !important;
+} 
+
 /* SPECIFICATION -------------------------------------- */
 
 .specificationContent{
