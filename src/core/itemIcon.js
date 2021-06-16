@@ -54,7 +54,7 @@ export function ItemIcon (
                 id={id} 
                 className={isOnEditMode ? "grabCursor material-icons" : "material-icons"} 
                 style={{
-                    color: iconColor,
+                    color:  iconColor,
                     fontSize:roadmapItemHeight + "px",
                     transform:APP_ITEM_TYPES_ENRICH[index].rotate ? 
                         "rotate(" + APP_ITEM_TYPES_ENRICH[index].rotate +")" 

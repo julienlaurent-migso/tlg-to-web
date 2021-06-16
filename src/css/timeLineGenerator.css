@@ -40,7 +40,16 @@ a:hover{text-decoration: none;}
   --color-migso-blue:rgb(2, 168, 219);
   --color-migso-blue-hover:#0297C6;
   --color-migso-yeallow:#fcc708;
+
+  --amplify-primary-color: white;
+  --amplify-primary-tint: #ff7359;
+  --amplify-primary-shade: #e0573e;
+
+  --amplify-primary-contrast:#0297C6
+
   }
+
+
   
 /* IMPORT -------------------------------------------------------------------------*/
  
@@ -367,6 +376,12 @@ amplify-sign-out {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+}
+
+.flexStartStart{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .flexBetweenCenter{

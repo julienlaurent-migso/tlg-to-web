@@ -7,6 +7,7 @@ import {
     FUNC_PARSE_DATE_FROM_INPUT,
     FUNC_TEXT_WIDTH,
     FUNC_COLOR_MNGT,
+    FUNC_ROADMAP_SELECTED_ITEM,
  } from '../core/standards'
  import {
     APP_ITEM_TYPES_ENRICH,
@@ -371,10 +372,20 @@ export function AddItemsModal ({updateState, roadmapNewItemOption, launchAppFunc
 /// DELTE ITEMS CONFIRMATION MODAL //////////////////////////
 /////////////////////////////////////////////////////////////
 
-export function ColorsItemsModal ({updateState, roadmapNewItemOption, launchAppFunctions}) {
+export function ColorsItemsModal ({updateState, roadmapNewItemOption, launchAppFunctions, itemList}) {
+
+
+    const selectedItem = FUNC_ROADMAP_SELECTED_ITEM(itemList);
 
     //INIT
-    var isTask = APP_ITEM_TYPES.task === roadmapNewItemOption.type || APP_ITEM_TYPES.consoTask === roadmapNewItemOption.type;
+    var isTask;
+    if(selectedItem){
+        isTask = selectedItem !== "milestone";
+    }else{
+        isTask = APP_ITEM_TYPES.task === roadmapNewItemOption.type || APP_ITEM_TYPES.consoTask === roadmapNewItemOption.type;
+    }
+    
+    //GET COLOR 
     var colorOptions = FUNC_COLOR_MNGT(isTask, roadmapNewItemOption.colors);
 
     ////////////////////////
@@ -384,7 +395,8 @@ export function ColorsItemsModal ({updateState, roadmapNewItemOption, launchAppF
     //SET STATE
     const [colors, setColors] = useState({
         background:colorOptions.background,
-        text: colorOptions.textColor,
+        textTask: colorOptions.textColorTask,
+        textMilestone: colorOptions.textColorMilestone,
         border: colorOptions.borderColor,
         icon: colorOptions.iconColor,
     });
@@ -419,24 +431,28 @@ export function ColorsItemsModal ({updateState, roadmapNewItemOption, launchAppF
         };
 
         //IS TASK 
-        if (isTask) {
-            colorsOject.colors.background = colors.background;
-            colorsOject.colors.textColor = colors.text;
-            colorsOject.colors.borderColor = colors.border;
-            colorsOject.colors.border = !specific.border;
-            colorsOject.colors.borderRadius = !specific.borderRadius;
+        colorsOject.colors.background = colors.background;
+        colorsOject.colors.textColorTask = colors.textTask;
+        colorsOject.colors.textColorMilestone = colors.textMilestone;
+        colorsOject.colors.borderColor = colors.border;
+        colorsOject.colors.border = !specific.border;
+        colorsOject.colors.borderRadius = !specific.borderRadius;
+        colorsOject.colors.iconColor = colors.icon;
+        colorsOject.action = null;
+
+        //selectedItemId
+        var selectedItemId;
+        if (selectedItem){
+            selectedItemId = itemList.map(item => item.id);
         }else{
-            colorsOject.colors.textColor = colors.text;
-            colorsOject.colors.iconColor = colors.icon;
+            selectedItemId = [roadmapNewItemOption.id];
         }
 
         //OPTIONS
         var options  ={
-            itemId: roadmapNewItemOption.id,
+            itemId: selectedItemId,
             colorsOject,
         }
-
-        console.log(colorsOject)
 
         //LANCEMENT MAJ
         launchAppFunctions(e, "roadmapItemColor", options);
@@ -468,38 +484,46 @@ export function ColorsItemsModal ({updateState, roadmapNewItemOption, launchAppF
                             >
                                 <span className="modalGroupTitle">Preview</span>
 
-                                {isTask? 
-                                    <div 
-                                        className="modalPreview"
-                                        style={{
-                                            backgroundColor: colors.background,
-                                            color: colors.text,
-                                            borderRadius: specific.borderRadius ? 0 : "4px",
-                                            border: specific.border ? "none" : "1px solid " + colors.border, 
-                                            padding:"5px 10px",
-                                            fontWeight: 500,
-                                        }}
-                                    >
-                                        {roadmapNewItemOption.name}
-                                    </div>
-                                :
-                                    <div className="modalPreview flexStartCenter">
-                                        <span 
-                                            className="material-icons" 
+                                {/* FLEX LINE*/}
+                                <div className="flexBetweenStart" style={{width:"415px"}}>
+
+                                    {isTask || selectedItem === "both" ? 
+                                        <div 
+                                            className="modalPreview"
                                             style={{
-                                                marginRight:"6px",
-                                                color: colors.icon,
+                                                backgroundColor: colors.background,
+                                                color: colors.textTask,
+                                                borderRadius: specific.borderRadius ? 0 : "4px",
+                                                border: specific.border ? "none" : "1px solid " + colors.border, 
+                                                padding:"5px 10px",
+                                                fontWeight: 500,
                                             }}
                                         >
-                                            star</span>
-                                        <span style={{
-                                            color: colors.text,
-                                            fontWeight: 500,
-                                            }}>
-                                           {roadmapNewItemOption.name}
-                                        </span>
-                                    </div>
-                                }
+                                            Task Text Preview
+                                        </div>
+                                    :null}
+
+                         
+
+                                    {!isTask || selectedItem === "both" ? 
+                                        <div className="modalPreview flexStartCenter">
+                                            <span 
+                                                className="material-icons" 
+                                                style={{
+                                                    marginRight:"6px",
+                                                    color: colors.icon,
+                                                }}
+                                            >
+                                                star</span>
+                                            <span style={{
+                                                color: colors.textMilestone,
+                                                fontWeight: 500,
+                                                }}>
+                                                    Milestone Text Preview
+                                            </span>
+                                        </div>
+                                    :null}
+                                </div>
 
                             </div>
 
@@ -509,36 +533,64 @@ export function ColorsItemsModal ({updateState, roadmapNewItemOption, launchAppF
                                 className="modalBlockInfo flexColCenterStart" 
                                 style={{padding:"5px 20px 0px 20px"}}
                             >
-                                <div className="modalGroupTitle">Colors Selectors</div>
                                 
-                                {isTask?
-                                    <div className="flexStartCenter modalInputRow">
-                                        <input type="color" className="form-control modalInputColor"  name="background" defaultValue={colors.background}  onChange={handlerColor} />
-                                        Background Color 
-                                    </div>
-                                :null}
+                                
+                                {/* FLEX LINE*/}
+                                <div className="flexBetweenStart" style={{width:"380px"}}>
 
-                                <div className="flexStartCenter modalInputRow">
-                                    <input type="color" className="form-control modalInputColor" name="text" defaultValue={colors.text} onChange={handlerColor} />
-                                    Text Color
+                                    
+
+                                    {/* TASK */}
+                                    {isTask || selectedItem === "both" ?
+                                        <div>
+
+                                            <div className="modalGroupTitle">Task Colors Selectors</div>
+
+                                            {/* TEXT COLOR */}
+                                            <div className="flexStartCenter modalInputRow">
+                                                <input type="color" className="form-control modalInputColor" name="textTask" defaultValue={colors.textTask} onChange={handlerColor} />
+                                                Text Color
+                                            </div>
+
+                                            {/* BACKGROUND COLOR */}
+                                            <div className="flexStartCenter modalInputRow">
+                                                <input type="color" className="form-control modalInputColor"  name="background" defaultValue={colors.background}  onChange={handlerColor} />
+                                                Background Color 
+                                            </div>
+
+                                            {/* BORDER COLOR */}
+                                            <div className="flexStartCenter modalInputRow">
+                                                <input type="color" className="form-control modalInputColor" name="border" defaultValue={colors.border} onChange={handlerColor} />
+                                                Border Color
+                                            </div>
+                                        </div>
+
+                                    :null}
+
+                                    
+                                    {/* MILESTONE */}
+                                    {!isTask || selectedItem === "both" ? 
+                                        <div>
+
+                                            <div className="modalGroupTitle">Task Colors Selectors</div>
+
+                                            {/* TEXT COLOR */}
+                                            <div className="flexStartCenter modalInputRow">
+                                                <input type="color" className="form-control modalInputColor" name="textMilestone" defaultValue={colors.textMilestone} onChange={handlerColor} />
+                                                Text Color
+                                            </div>
+
+                                            {/* ICON */}
+                                            <div className="flexStartCenter modalInputRow">
+                                                <input type="color" className="form-control modalInputColor"  name="icon" defaultValue={colors.icon} onChange={handlerColor} />
+                                                Icon Color 
+                                            </div>
+                                        </div>
+
+                                    :null}
                                 </div>
 
-                                {isTask?
-                                    <div className="flexStartCenter modalInputRow">
-                                        <input type="color" className="form-control modalInputColor" name="border" defaultValue={colors.border} onChange={handlerColor} />
-                                        Border Color
-                                    </div>
-                                :null}
-                                
-                                {isTask? null :
-                                    <div className="flexStartCenter modalInputRow">
-                                        <input type="color" className="form-control modalInputColor"  name="icon" defaultValue={colors.icon} onChange={handlerColor} />
-                                        Icon Color 
-                                    </div>
-                                }
                             </div>
-
-
 
                             {/* Options */}
 

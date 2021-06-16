@@ -2,6 +2,7 @@ import React from 'react'
 import {
     APP_ITEM_TYPES_ENRICH,
     APP_ITEM_TYPES,
+    APP_STANDARDS,
 } from './constants'
 import {
     FUNCT_FIND_INDEX,
@@ -52,7 +53,7 @@ export function ItemIcon (
                 key={"icon-" + id}
                 className={isOnEditMode ? "grabCursor material-icons" : "material-icons"} 
                 style={{
-                    color: iconColor,
+                    color: type === APP_ITEM_TYPES.task ? APP_STANDARDS.itemTaskColorIcon : iconColor,
                     fontSize:roadmapItemHeight + "px",
                     transform:APP_ITEM_TYPES_ENRICH[index].rotate ? 
                         "rotate(" + APP_ITEM_TYPES_ENRICH[index].rotate +")" 

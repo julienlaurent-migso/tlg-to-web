@@ -378,10 +378,10 @@ class RoadmapItem extends React.PureComponent{
                         style={{
                             width: itemWidth, 
                             height: userSettings.roadmapItemHeight,
-                            backgroundColor: colorOptions.background,
+                            backgroundColor: isTask ? colorOptions.background : null,
                             border: isTask ? colorOptions.border ? "1px solid " + colorOptions.borderColor : "none" : "none",
                             borderRadius: isTask ? colorOptions.borderRadius ? "3px" : "0px" : "0px",
-                            color: colorOptions.textColor,
+                            color: isTask ? colorOptions.textColorTask : colorOptions.textColorMilestone, 
                             fontSize: userSettings.roadmapItemFontSize,
                             zIndex: itemZindex,
                             boxShadow: itemSelectedCss,

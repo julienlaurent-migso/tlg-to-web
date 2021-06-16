@@ -40,6 +40,7 @@ import {
   FUNC_ARRAY_MIN_MAX,
   FUNC_ROADMAP_SIZE_INFO,
   FUNC_ROADMAP_GROUP_HEIGHT,
+  FUNCT_FIND_INDEX_ARRAY
 } from './core/standards'
 import { withAuthenticator } from '@aws-amplify/ui-react'
 
@@ -90,7 +91,7 @@ class App extends React.Component{
   /////////////////////////////////////////////
   /// UPDATE ROADMAP DATA | OBJECT | OPTION ///
   /////////////////////////////////////////////                            
-  updateRoadmapData(id, object, option){
+  updateRoadmapData(ids, object, option){
 
     //GET ALL OBJECTS ATTRIBUTS TO UPDATE
     var attributs;
@@ -103,7 +104,7 @@ class App extends React.Component{
       let roadmapData = [...prevState.roadmapData].map(item => {
 
         //ON UPDATE SEUELEMNT SUR ITEM ID
-        if(id && item.id === id){
+        if(FUNCT_FIND_INDEX_ARRAY(ids,item.id) !== -1){
 
           //UPDATE REFERNECE OBJECT WITH NEW VALUES
           for(var i=0 ; i < attributs.length ; i++){
@@ -392,7 +393,7 @@ class App extends React.Component{
       //ROADMAP ITEM COPY -----------------------------------------------------------------------------
       case "roadmapItemCopy":
         this.updateRoadmapData(
-          options.id, 
+          [options.id], 
           {action: "copy"}, 
           {type:"copy"}
         )
@@ -414,7 +415,7 @@ class App extends React.Component{
       //SELECT ITEM  -----------------------------------------------------------------------------------
       case "roadmapItemSelect":
         this.updateRoadmapData(
-          options.id, 
+          [options.id], 
           options.object, 
           options.option
         )
@@ -422,9 +423,11 @@ class App extends React.Component{
       
       //UPDATE ITEM COLOR  -----------------------------------------------------------------------------------
       case "roadmapItemColor":
+        console.log(options)
         this.updateRoadmapData(
           options.itemId, 
-          options.colorsOject
+          options.colorsOject,
+          {type:"actionReset"}
         )
         break;
 
@@ -627,6 +630,7 @@ class App extends React.Component{
               updateState={this.updateState}
               roadmapNewItemOption={this.state.appSettings.roadmapNewItemOption}
               launchAppFunctions={this.launchAppFunctions}
+              itemList={this.state.roadmapData.filter(item => item.action === "select")}
             />
           :null}
 

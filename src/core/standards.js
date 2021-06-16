@@ -2,7 +2,8 @@ import React, {useState} from 'react'
 import ReactTooltip from "react-tooltip";
 import {
   APP_MONTH_NAMES,
-  APP_STANDARDS
+  APP_STANDARDS,
+  APP_ITEM_TYPES
 } from '../core/constants'
 
 
@@ -37,6 +38,37 @@ export const useInput = initialValue => {
 //////////////////////////////////////////////////////////////////////
 /// HELPERS //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
+
+//DETERMINE IF TASK AND MILESTONE SELECTED OR ONLY TASK OR ONLY MILESOTNE FOR COLOR SETTINGS
+export const FUNC_ROADMAP_SELECTED_ITEM = (itemList) => {
+  let selectedItem = null;
+  let isTask = false;
+  let isMilestone = false;
+  if (itemList.length > 0){
+
+    //loop selected items to identify task and milestones
+    for (let j=0 ; j < itemList.length ; j++){
+      if (itemList[j].type === APP_ITEM_TYPES.task || itemList[j].type === APP_ITEM_TYPES.consotask){
+        isTask = true;
+      }else{
+        isMilestone=true;
+      }
+    }
+
+    //set selectedItem info
+    if(isTask && isMilestone){
+      selectedItem = "both"
+    }else{
+      if(isTask && !isMilestone){
+        selectedItem = "task"
+      }else{
+        selectedItem = "milestone"
+      }
+    }
+
+  }
+  return selectedItem;
+}
 
 //ROADMAP SIZE INFO
 export const FUNC_ROADMAP_SIZE_INFO = (appSettings,headerOption,roadmapPeriod ) =>{
@@ -118,7 +150,8 @@ export const FUNC_COLOR_MNGT = (isTask, colors) =>{
 
     //INTEGRATION
     colorOptions.background = colors.background ? colors.background : isTask ? APP_STANDARDS.itemTaskBackground : null ;
-    colorOptions.textColor = colors.textColor ? colors.textColor : isTask ? APP_STANDARDS.itemTaskColorTxt : APP_STANDARDS.itemMilestoneColorTxt ;
+    colorOptions.textColorTask = colors.textColorTask ? colors.textColorTask : APP_STANDARDS.itemTaskColorTxt ;
+    colorOptions.textColorMilestone = colors.textColorMilestone ? colors.textColorMilestone : APP_STANDARDS.itemMilestoneColorTxt;
     colorOptions.iconColor = colors.iconColor ? colors.iconColor : isTask ? APP_STANDARDS.itemTaskColorIcon : APP_STANDARDS.itemMilestoneColorIcon ;
     colorOptions.borderColor = colors.borderColor ? colors.borderColor : APP_STANDARDS.itemBorderColor;
     colorOptions.border = colors.border === null || colors.border === undefined ? APP_STANDARDS.itemTaskBorder : colors.border  ;
@@ -128,7 +161,8 @@ export const FUNC_COLOR_MNGT = (isTask, colors) =>{
 
     //INTEGRATION
     colorOptions.background = isTask ? APP_STANDARDS.itemTaskBackground : null ;
-    colorOptions.textColor = isTask ? APP_STANDARDS.itemTaskColorTxt : APP_STANDARDS.itemMilestoneColorTxt ;
+    colorOptions.textColorTask = APP_STANDARDS.itemTaskColorTxt;
+    colorOptions.textColorMilestone = APP_STANDARDS.itemMilestoneColorTxt ;
     colorOptions.iconColor = isTask ? APP_STANDARDS.itemTaskColorIcon : APP_STANDARDS.itemMilestoneColorIcon ;
     colorOptions.borderColor =  isTask ? APP_STANDARDS.itemBorderColor : null;
     colorOptions.border =  isTask ? APP_STANDARDS.itemTaskBorder : null;
@@ -355,6 +389,12 @@ export const FUNC_TXT_TO_DATE_2 = (dateTxt) =>{
 export const FUNCT_FIND_INDEX = (data, searchColumn, searchName) => {
   return data.findIndex(item => searchName === item[searchColumn])
 }  
+
+//findIndex of an item in an array object, specify search column and what are you looking for
+export const FUNCT_FIND_INDEX_ARRAY = (data, searchItem) => {
+  return data.findIndex(item => item === searchItem)
+}  
+
 
 //Conversion number to MILIONS 
 export const numberFormatMillions = number => {
