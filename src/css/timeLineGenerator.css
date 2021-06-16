@@ -964,3 +964,12 @@ amplify-sign-out {
   cursor:move;
 }
 
+/* SELECTOR ------------------------------------- */
+
+#selector{
+  position:absolute;
+  background-color: rgba(2, 168, 219,0.2);
+  z-index:50;
+  border: 1px dashed var(--color-migso-blue);
+}
+

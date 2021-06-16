@@ -14,6 +14,154 @@ import {
 ///////////////////////// 
 class Roadmap extends React.Component{
 
+    /////////////////////////
+    /// INITIAL STATEMENT ///
+    /////////////////////////
+    constructor(props) {
+        super(props);
+        this.state={
+            displaySelectRect:{
+                display:false,
+                left:0,
+                top:0,
+                width:0,
+                height:0,
+                initX:0,
+                initY:0,
+                parentX:0,
+                parentY:0,
+                scrollLeft:0,
+                scrollTop:0,
+            }
+        }
+    }
+
+    /////////////////
+    /// SELECTION ///
+    /////////////////
+
+    //SELECTION START ------------------------------------------------------------------------------------------
+    handleSelectionStart(e){
+
+        e.preventDefault();
+
+        if(e.button === 0 ){
+
+            //INIT
+            var appContent = document.getElementById("appContent")
+            var appContentBlock = appContent.getBoundingClientRect();
+
+            //GET CLIENT X Y for init
+            this.setState(prevState =>{
+                let displaySelectRect = prevState.displaySelectRect;
+                displaySelectRect.display = true;
+                displaySelectRect.initX = e.clientX - appContentBlock.left;
+                displaySelectRect.initY = e.clientY - appContentBlock.top;
+                displaySelectRect.left = e.clientX - appContentBlock.left + appContent.scrollLeft;
+                displaySelectRect.top = e.clientY - appContentBlock.top + appContent.scrollTop;
+                displaySelectRect.parentX = appContentBlock.left;
+                displaySelectRect.parentY = appContentBlock.top;
+                displaySelectRect.scrollLeft = appContent.scrollLeft;
+                displaySelectRect.scrollTop = appContent.scrollTop;
+                return displaySelectRect;
+            })
+
+            //RESET ONLY IF CTRL NOT PRESS
+            if(!e.ctrlKey){
+                this.resetSelectedItem(e);
+            }
+        }
+    }
+
+    //SELECTION MOUVE ---------------------------------------------------------------------------------------------
+    handleSelectionMouve(e){
+
+        //INIT
+        e.preventDefault();
+
+        const {initX, initY, parentX, parentY, scrollLeft, scrollTop} = this.state.displaySelectRect
+        const clientX = e.clientX - parentX;
+        const clientY = e.clientY - parentY;
+
+        //CASE > initX && > initY
+        if (clientX >= initX && clientY >= initY){
+            this.setState(prevState =>{
+                let displaySelectRect = prevState.displaySelectRect;
+                displaySelectRect.width = clientX - initX;
+                displaySelectRect.height = clientY - initY;
+                return displaySelectRect;
+            })
+        }
+
+        //CASE < initX && < initY
+        if (clientX < initX && clientY < initY){
+            this.setState(prevState =>{
+                let displaySelectRect = prevState.displaySelectRect;
+                displaySelectRect.width = initX - clientX ;
+                displaySelectRect.height = initY - clientY ;
+                displaySelectRect.left = clientX + scrollLeft ;
+                displaySelectRect.top = clientY + scrollTop;
+                return displaySelectRect;
+            })
+        }
+
+        //CASE < initX && > initY
+        if (clientX < initX && clientY >= initY){
+            this.setState(prevState =>{
+                let displaySelectRect = prevState.displaySelectRect;
+                displaySelectRect.width = initX - clientX ;
+                displaySelectRect.height = clientY - initY;
+                displaySelectRect.left = clientX + scrollLeft;
+                return displaySelectRect;
+            })
+        }
+
+        //CASE < initX && > initY
+        if (clientX >= initX && clientY < initY){
+            this.setState(prevState =>{
+                let displaySelectRect = prevState.displaySelectRect;
+                displaySelectRect.width = clientX - initX ;
+                displaySelectRect.height = initY - clientY ;
+                displaySelectRect.top = clientY + scrollTop;
+                return displaySelectRect;
+            })
+        }
+
+    }
+
+    //SELECTION STOP -------------------------------------------------------------------------------------------
+    handleSelectionStop(){
+        this.setState(prevState =>{
+            let displaySelectRect = prevState.displaySelectRect;
+            displaySelectRect.display = false;
+            displaySelectRect.width = 0;
+            displaySelectRect.height = 0;
+            return displaySelectRect;
+        })
+    }
+
+
+    
+    //RESET SELECTED ITEMS
+    resetSelectedItem(e){
+
+        //INIT
+        e.preventDefault();
+
+        //TEST SI BESOIN DE RESET
+        if(this.props.actions.isItemsSelected || this.props.actions.isItemsCopied){
+            var options ={
+                id: null,
+                object: null,
+                option: {type:"actionReset"},
+            }
+            this.props.launchAppFunctions(e,"roadmapItemSelect", options)
+        }
+
+    }
+
+
+
     ////////////////////////////////
     /// ROADMAP COMPONENT RENDER ///
     ////////////////////////////////
@@ -57,7 +205,24 @@ class Roadmap extends React.Component{
             <section 
                 id="appContent" 
                 className="roadmapContent"
+                onMouseDown={isOnEditMode ? (e)=> this.handleSelectionStart(e) : null}
+                onMouseUp={isOnEditMode && this.state.displaySelectRect.display  ? () => this.handleSelectionStop() : null}
+                onMouseMove={isOnEditMode && this.state.displaySelectRect.display  ? (e)=> this.handleSelectionMouve(e) : null}
+                onMouseLeave={isOnEditMode && this.state.displaySelectRect.display  ? () => this.handleSelectionStop() : null}
             >
+
+                 {/* SELECTOR */}
+                 {this.state.displaySelectRect.display ?
+                    <div 
+                        id="selector"
+                        style={{
+                            left:this.state.displaySelectRect.left + "px",
+                            top:this.state.displaySelectRect.top + "px",
+                            width:this.state.displaySelectRect.width + "px",
+                            height:this.state.displaySelectRect.height + "px",
+                        }}
+                    ></div>
+                :null}
 
                 {/* ROADMAP HEADER ------------------------------- OK -----------------------*/}
                 <RoadmapHeader 

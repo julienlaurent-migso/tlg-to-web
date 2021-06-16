@@ -58,6 +58,7 @@ export function ContextMenu ({
             <div 
               key={"contextItem" + menu.sort} 
               className={menu.icon === "delete" ? "contextMenuAction flexStartCenter contextMenuActionDelete" : "contextMenuAction flexStartCenter"}
+              onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => handleAction(e,menu.parameter,item)}
             >
               <span className="material-icons contextMenuActionIcon">
@@ -93,6 +94,7 @@ export function ContextMenu ({
               <div 
                 key={"contextGroup" + menu.sort} 
                 className="contextMenuAction flexStartCenter " 
+                onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => handleAction(e,menu.parameter,groupOptions)}
               >
                 <span className="material-icons contextMenuActionIcon " >
@@ -147,6 +149,7 @@ export function ContextMenu ({
               <div 
                 key={"contextGroup" + menu.sort} 
                 className="contextMenuAction flexStartCenter"
+                onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => handleAction(e,"roadmapHeader", {parameter: menu.parameter})}
               >
                 <span className={"material-icons contextMenuActionIcon " + iconClassSelected}>
@@ -224,6 +227,7 @@ export function ContextMenu ({
           </div>
           <div 
             className="contextMenuBg" 
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => resetContextMenu(e)}
             onContextMenu={(e) => resetContextMenu(e)}
           ></div>

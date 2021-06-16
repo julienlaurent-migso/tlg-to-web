@@ -27,25 +27,6 @@ class RoadmapGroup extends React.PureComponent{
     /// GROUP ACTIONS ///
     /////////////////////
 
-    //RESET SELECTED ITEMS
-    resetSelectedItem(e){
-
-        //INIT
-        e.preventDefault();
-        e.stopPropagation();
-
-        //TEST SI BESOIN DE RESET
-        if(this.props.actions.isItemsSelected || this.props.actions.isItemsCopied){
-            var options ={
-                id: null,
-                object: null,
-                option: {type:"actionReset"},
-            }
-            this.props.launchAppFunctions(e,"roadmapItemSelect", options)
-        }
-
-    }
-
     //UPDATE CONTEXTMENU -------------------------------------------------------------------------------------------
     updateContextMenu(e){
         
@@ -113,10 +94,8 @@ class RoadmapGroup extends React.PureComponent{
         /// ROADMAP COMPONENT RETURN ///
         ////////////////////////////////
         return(
-            <div 
-                className="roadmapContentGroup"
-                
-            >
+            <div className="roadmapContentGroup">
+
                     <div 
                         className="roadmapGroup flexStartStrech" 
                         style={{
@@ -149,7 +128,6 @@ class RoadmapGroup extends React.PureComponent{
                             id={"itemsGroup-" + groupSettings.key}
                             className="roadmapRightSide" 
                             onContextMenu={isOnEditMode ? (e) => this.updateContextMenu(e) : null}
-                            onClick={isOnEditMode? (e) => this.resetSelectedItem(e) : null}
                             onDragOver={(e) => this.dragOver(e)}
                         >
                             

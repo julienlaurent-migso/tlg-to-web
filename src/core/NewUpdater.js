@@ -155,6 +155,7 @@ export class UpdaterWithInput extends React.PureComponent{
               displayedInput(inputType)
             :
               <div 
+                onMouseDown={(e) => e.stopPropagation()}
                 onDoubleClick={(e) => this.toggleDisplay(e)} 
                 onClick={(e) => this.handleClick(e, item.id, item.action)}
                 className= "roadmapItemsContent flex-fill" 

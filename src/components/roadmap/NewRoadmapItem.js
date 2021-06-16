@@ -131,6 +131,7 @@ class RoadmapItem extends React.PureComponent{
     //START MOVING ITEM --------------------------------------------------------------------------------------------
     onMoveStart = (e, type, item) => { 
 
+        
         //INIT
         var dateViewerX;
 
@@ -396,6 +397,7 @@ class RoadmapItem extends React.PureComponent{
                         {isOnEditMode ? 
                             <div 
                                 id={"icon-" + item.id}
+                                onMouseDown={(e) => e.stopPropagation()}
                                 onDrag={(e) => this.handleDrag(e, item.id)} 
                                 onDragStart={(e) => this.onMoveStart(e,"drag", itemLight)}
                                 onDragEnd={() => this.onMoveStop("drag", item.id)}
@@ -438,6 +440,7 @@ class RoadmapItem extends React.PureComponent{
                             <div 
                                 id={"resizer-" + item.id} 
                                 className="roadmapItemResizer"
+                                onMouseDown={(e) => e.stopPropagation()}
                                 onDrag={(e) => this.handleResize(e, item.id)} 
                                 onDragStart={(e) => this.onMoveStart(e,"resize", itemLight)}
                                 onDragEnd={() => this.onMoveStop("resize", item.id)}
