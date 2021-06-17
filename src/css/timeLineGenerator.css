@@ -864,6 +864,7 @@ amplify-sign-out {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 500;
+  cursor: pointer;
 }
 .roadmapContentLines{
   position: absolute;

@@ -80,7 +80,7 @@ export const FUNC_ROADMAP_SIZE_INFO = (appSettings,headerOption,roadmapPeriod ) 
 
 
 //ROADMAP GROUP HEIGHT AND GLOBAL
-export const FUNC_ROADMAP_GROUP_HEIGHT = (roadmapData, groupSettings, roadmapItemHeight) =>{
+export const FUNC_ROADMAP_GROUP_HEIGHT = (roadmapData, groupSettings, userSettings) =>{
 
   //
   var roadmapHeightGroup = {};
@@ -94,7 +94,7 @@ export const FUNC_ROADMAP_GROUP_HEIGHT = (roadmapData, groupSettings, roadmapIte
       const groupHeight = (group) => {
           let items = roadmapData.filter(item => item.groupKey === groupsSettingsShallow[group].key && item.display);
           items.sort(function(a, b){return a.top - b.top;})
-          let heightCalc = items[items.length-1].top + roadmapItemHeight + APP_STANDARDS.roadmapItemSpace;
+          let heightCalc = items[items.length-1].top + userSettings.roadmapItemHeight + userSettings.roadmapItemSpaceLine;
           return heightCalc
       }
 

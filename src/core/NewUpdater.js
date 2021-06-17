@@ -81,6 +81,12 @@ export class UpdaterWithInput extends React.PureComponent{
           }
       }, setTime);
     }
+
+    //STOP SELECTION AND PROPAGATION
+    handleStopEvent(e){
+      e.preventDefault();
+      e.stopPropagation();
+    }
   
     //////////////
     /// RENDER ///
@@ -155,7 +161,7 @@ export class UpdaterWithInput extends React.PureComponent{
               displayedInput(inputType)
             :
               <div 
-                onMouseDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => this.handleStopEvent(e)}
                 onDoubleClick={(e) => this.toggleDisplay(e)} 
                 onClick={(e) => this.handleClick(e, item.id, item.action)}
                 className= "roadmapItemsContent flex-fill" 

@@ -32,12 +32,14 @@ class Roadmap extends React.Component{
                 parentY:0,
                 scrollLeft:0,
                 scrollTop:0,
+                contentWidth:0,
+                totWidth:0
             }
         }
     }
 
     /////////////////
-    /// SELECTION ///
+    /// SELECTION /// =>> INTEGRATION COMPONENT
     /////////////////
 
     //SELECTION START ------------------------------------------------------------------------------------------
@@ -78,13 +80,21 @@ class Roadmap extends React.Component{
 
         //INIT
         e.preventDefault();
-
-        const {initX, initY, parentX, parentY, scrollLeft, scrollTop} = this.state.displaySelectRect
+        const {
+            initX, 
+            initY, 
+            parentX, 
+            parentY, 
+            scrollLeft, 
+            scrollTop, 
+        } = this.state.displaySelectRect
         const clientX = e.clientX - parentX;
         const clientY = e.clientY - parentY;
 
         //CASE > initX && > initY
         if (clientX >= initX && clientY >= initY){
+
+            //UPDATE SET
             this.setState(prevState =>{
                 let displaySelectRect = prevState.displaySelectRect;
                 displaySelectRect.width = clientX - initX;

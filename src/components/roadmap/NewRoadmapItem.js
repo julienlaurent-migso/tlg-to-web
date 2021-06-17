@@ -247,9 +247,14 @@ class RoadmapItem extends React.PureComponent{
                 action:"dragDrop",
                 id:itemId,
                 diffX:x,
-                positionY:this.props.item.top + y,
+                positionY:this.props.item.cumuTop + y,
                 groupKey:this.props.groupKey,
             }
+
+            //!!!!!!!!!!!!!!!!!!!!
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  modifier positionY
+            //!!!!!!!!!!!!!!!!!!
+
 
             //STOP DRAG & LAUNCH POSITION REGARDING NEW LEFT & TOP POSITION
             this.setState({

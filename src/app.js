@@ -585,7 +585,7 @@ class App extends React.Component{
                       <Roadmap 
                         roadmapMonthWidth={appSettings.roadmapMonthWidth}
                         isOnEditMode={this.state.appSettings.isOnEditMode}
-                        groupSettings={FUNC_ROADMAP_GROUP_HEIGHT(roadmapData,this.state.groupSettings,userSettings.roadmapItemHeight)}
+                        groupSettings={FUNC_ROADMAP_GROUP_HEIGHT(roadmapData,this.state.groupSettings,userSettings)}
                         updateState={this.updateState}
                         userSettings={userSettings}
                         headerOption={this.state.headerOption}

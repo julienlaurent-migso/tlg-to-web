@@ -33,13 +33,14 @@ const ROADMAP_TOP_POSITION = (data, userSettings) =>{
     })
 
     //LOOP
-    var topPosition;
+    var topPosition = 0;
     var currentGroup = "";
     var currentLevel = "";
     var virtualLineTab;
     var testIfFound;
     var leftPositionToTest;
     var prevTopPosition;
+    var cumuTopGroup = 0;
     for(var j = 0 ; j < transformedData.length ; j++){
 
         //RESET ACTIONS
@@ -57,11 +58,17 @@ const ROADMAP_TOP_POSITION = (data, userSettings) =>{
             //Si NOUVEAU GROUP ALORS ON RESET A INIT
             testIfFound = false;
             if(transformedData[j].group !== currentGroup){
+
+                //CUMU TOP
+                if(j !== 0){cumuTopGroup = cumuTopGroup + virtualLineTab[0].top + userSettings.roadmapItemSpaceLine + userSettings.roadmapItemHeight;}
+
+                //TOP AND RESET
                 topPosition = userSettings.roadmapItemSpaceLine;
                 currentGroup = transformedData[j].group;
                 currentLevel = "";
                 virtualLineTab = [];
                 testIfFound = true;
+
             }
 
             //Si NOUVEAU LEVEL GROUP
@@ -84,6 +91,7 @@ const ROADMAP_TOP_POSITION = (data, userSettings) =>{
 
                 //OK POUR 
                 transformedData[j].top = topPosition;
+                transformedData[j].cumuTop = topPosition + cumuTopGroup;
 
                 //GET UPDATE TRACKER
                 if (prevTopPosition !== transformedData[j].top){
@@ -116,6 +124,7 @@ const ROADMAP_TOP_POSITION = (data, userSettings) =>{
                         
                         //OK FOUND
                         transformedData[j].top = virtualLineTab[k].top;
+                        transformedData[j].cumuTop =  virtualLineTab[k].top + cumuTopGroup;
                         virtualLineTab[k].right = transformedData[j].right;
                         virtualLineTab[k].id=transformedData[j].id;
                         testIfFound = true;
@@ -134,6 +143,7 @@ const ROADMAP_TOP_POSITION = (data, userSettings) =>{
                     //TOP POSITION
                     topPosition = topPosition + userSettings.roadmapItemSpaceLine + userSettings.roadmapItemHeight
                     transformedData[j].top = topPosition;
+                    transformedData[j].cumuTop = topPosition + cumuTopGroup;
 
                     //GET UPDATE TRACKER
                     if (prevTopPosition !== transformedData[j].top){
@@ -588,20 +598,20 @@ export const ROADMAP_DATA_DRAG_DROP = (
         /// GROUP LEVEL MANAGEMENT ///
         //////////////////////////////
 
-        console.log(itemTopPosition)
-
         //TROUVER GROUP ITEMS LIST
-        var itemsGroup = transformedData.filter(item => item.groupKey === groupKey);
-        var indexMatchTop = itemsGroup.findIndex(item => itemTopPosition < item.top - userSettings.roadmapItemSpaceLine/2) - 1;
+        //var itemsGroup = transformedData.filter(item => item.groupKey === groupKey);
+        var indexMatchTop = transformedData.findIndex(item => itemTopPosition < item.cumuTop - userSettings.roadmapItemSpaceLine/2) - 1;
+        console.log(itemTopPosition, indexMatchTop)
 
         //RECTIF SI EN DESSOUS
-        if(indexMatchTop === -2){indexMatchTop = itemsGroup.length -1}
+        if(indexMatchTop === -2){indexMatchTop = transformedData.length -1}
         if(indexMatchTop === -1){indexMatchTop = 0}
 
         //UPDATE LEVEL & SORT
-        transformedData[itemIndex].groupKey = groupKey
-        transformedData[itemIndex].level = itemsGroup[indexMatchTop].level
-        transformedData[itemIndex].sort = itemsGroup[indexMatchTop].sort
+        transformedData[itemIndex].groupKey = transformedData[indexMatchTop].groupKey
+        transformedData[itemIndex].group = transformedData[indexMatchTop].group;
+        transformedData[itemIndex].level = transformedData[indexMatchTop].level
+        transformedData[itemIndex].sort = transformedData[indexMatchTop].sort
 
         //RETURN TRANSFORMED DATA
         return ROADMAP_TOP_POSITION(transformedData, userSettings)
