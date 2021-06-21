@@ -342,7 +342,6 @@ class RoadmapItem extends React.PureComponent{
 
         //CSS
         var itemSelectedCss = item.action === "select" ? "0 0 0 3px rgb(13 110 253 / 25%)" : null;
-        console.log(itemSelectedCss)
         var itemCopiedCss = item.action === "copy" ? "roadmapItemCopied" : null;
         var itemCss = this.state.stopTransition  ? "box flexBetweenCenter " + itemCopiedCss : "box flexBetweenCenter roadmapItemBlock " + itemCopiedCss;
         

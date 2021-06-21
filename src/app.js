@@ -41,8 +41,8 @@ import {
   FUNC_ROADMAP_SIZE_INFO,
   FUNC_ROADMAP_GROUP_HEIGHT,
   FUNCT_FIND_INDEX_ARRAY,
-  FUNC_FIND_INTERSECTE
 } from './core/standards'
+import {  FUNC_SELECTOR_FIND_INTERSECTE} from './core/selector'
 import { withAuthenticator } from '@aws-amplify/ui-react'
 
 //////////////////////////////////////////////////////////////////////////
@@ -467,9 +467,12 @@ class App extends React.Component{
 
       //OPEN ADD MODAL ----------------------------------------------------------------------------------
       case "roadmapGroupSelection":
-        console.log(FUNC_FIND_INTERSECTE(this.state.roadmapData, options, this.state.userSettings.roadmapItemHeight))
         this.updateRoadmapData(
-          FUNC_FIND_INTERSECTE(this.state.roadmapData, options, this.state.userSettings.roadmapItemHeight), 
+          FUNC_SELECTOR_FIND_INTERSECTE(
+            this.state.roadmapData, 
+            options, 
+            this.state.userSettings.roadmapItemHeight
+            ), 
           {action: "select"}, 
           {type:"select", isCtrlPressed: e.ctrlKey},
         )
@@ -537,7 +540,7 @@ class App extends React.Component{
     /// APP COMPONENT RETURN ///
     ////////////////////////////
     return(
-      <main id="appMain" >
+      <main id="appMain" onMouseDown={this.state.appSettings.isOnEditMode ? (e) => e.preventDefault() : null}>
         <BrowserRouter>
 
           {/* HEADER */}

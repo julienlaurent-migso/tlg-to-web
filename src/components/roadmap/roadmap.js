@@ -5,8 +5,14 @@ import RoadmapContentLines from './roadmapContentLines'
 import {RoadmapSpinner} from '../../core/spinner'
 import {APP_STANDARDS} from '../../core/constants'
 import {
-    FUNC_ARRAY_SUM_ATTRIBUT
+    FUNC_ARRAY_SUM_ATTRIBUT,
+    FUNC_IS_ON_SCROLL
 } from '../../core/standards'
+import {
+    SELECTOR_INIT,
+    FUNC_SELECTOR_START,
+    FUNC_SELECTOR_MOVE
+} from '../../core/selector'
 
 
 /////////////////////////
@@ -20,21 +26,7 @@ class Roadmap extends React.Component{
     constructor(props) {
         super(props);
         this.state={
-            displaySelectRect:{
-                display:false,
-                left:0,
-                top:0,
-                width:0,
-                height:0,
-                initX:0,
-                initY:0,
-                parentX:0,
-                parentY:0,
-                scrollLeft:0,
-                scrollTop:0,
-                contentWidth:0,
-                totWidth:0
-            }
+            displaySelectRect: SELECTOR_INIT,
         }
     }
 
@@ -45,32 +37,26 @@ class Roadmap extends React.Component{
     //SELECTION START ------------------------------------------------------------------------------------------
     handleSelectionStart(e){
 
-        e.preventDefault();
-
-        if(e.button === 0 ){
+        if(!FUNC_IS_ON_SCROLL(e.clientX, e.clientY)){
 
             //INIT
-            var appContent = document.getElementById("appContent")
-            var appContentBlock = appContent.getBoundingClientRect();
+            e.preventDefault();
+            const {width, height} = this.state.displaySelectRect;
+            
+            //ONLY IF LEFT BUTTON CLICKED AND NO SELECTOR
+            if(e.button === 0 && width === 0 && height === 0){
 
-            //GET CLIENT X Y for init
-            this.setState(prevState =>{
-                let displaySelectRect = prevState.displaySelectRect;
-                displaySelectRect.display = true;
-                displaySelectRect.initX = e.clientX - appContentBlock.left;
-                displaySelectRect.initY = e.clientY - appContentBlock.top;
-                displaySelectRect.left = e.clientX - appContentBlock.left + appContent.scrollLeft;
-                displaySelectRect.top = e.clientY - appContentBlock.top + appContent.scrollTop;
-                displaySelectRect.parentX = appContentBlock.left;
-                displaySelectRect.parentY = appContentBlock.top;
-                displaySelectRect.scrollLeft = appContent.scrollLeft;
-                displaySelectRect.scrollTop = appContent.scrollTop;
-                return displaySelectRect;
-            })
+                //GET CLIENT X Y for init
+                this.setState(prevState =>{
+                    let displaySelectRect = prevState.displaySelectRect;
+                    displaySelectRect = FUNC_SELECTOR_START(displaySelectRect,e.clientX,e.clientY)
+                    return displaySelectRect;
+                })
 
-            //RESET ONLY IF CTRL NOT PRESS
-            if(!e.ctrlKey){
-                this.resetSelectedItem(e);
+                //RESET ONLY IF CTRL NOT PRESS
+                if(!e.ctrlKey){
+                    this.resetSelectedItem(e);
+                }
             }
         }
     }
@@ -80,72 +66,26 @@ class Roadmap extends React.Component{
 
         //INIT
         e.preventDefault();
-        const {
-            initX, 
-            initY, 
-            parentX, 
-            parentY, 
-            scrollLeft, 
-            scrollTop, 
-        } = this.state.displaySelectRect
-        const clientX = e.clientX - parentX;
-        const clientY = e.clientY - parentY;
-
-        //CASE > initX && > initY
-        if (clientX >= initX && clientY >= initY){
-
-            //UPDATE SET
-            this.setState(prevState =>{
-                let displaySelectRect = prevState.displaySelectRect;
-                displaySelectRect.width = clientX - initX;
-                displaySelectRect.height = clientY - initY;
-                return displaySelectRect;
-            })
-        }
-
-        //CASE < initX && < initY
-        if (clientX < initX && clientY < initY){
-            this.setState(prevState =>{
-                let displaySelectRect = prevState.displaySelectRect;
-                displaySelectRect.width = initX - clientX ;
-                displaySelectRect.height = initY - clientY ;
-                displaySelectRect.left = clientX + scrollLeft ;
-                displaySelectRect.top = clientY + scrollTop;
-                return displaySelectRect;
-            })
-        }
-
-        //CASE < initX && > initY
-        if (clientX < initX && clientY >= initY){
-            this.setState(prevState =>{
-                let displaySelectRect = prevState.displaySelectRect;
-                displaySelectRect.width = initX - clientX ;
-                displaySelectRect.height = clientY - initY;
-                displaySelectRect.left = clientX + scrollLeft;
-                return displaySelectRect;
-            })
-        }
-
-        //CASE < initX && > initY
-        if (clientX >= initX && clientY < initY){
-            this.setState(prevState =>{
-                let displaySelectRect = prevState.displaySelectRect;
-                displaySelectRect.width = clientX - initX ;
-                displaySelectRect.height = initY - clientY ;
-                displaySelectRect.top = clientY + scrollTop;
-                return displaySelectRect;
-            })
-        }
+        
+        //GET CLIENT X Y for init
+        this.setState(prevState =>{
+            let displaySelectRect = prevState.displaySelectRect;
+            displaySelectRect = FUNC_SELECTOR_MOVE(displaySelectRect,e.clientX,e.clientY)
+            return displaySelectRect;
+        })
 
     }
 
     //SELECTION STOP -------------------------------------------------------------------------------------------
     handleSelectionStop(e){
 
+        //RECT HEADER HEIGHT
+        var headerHeight = document.getElementById("roadmapHeader").offsetHeight
+
         //LANCH SELECTION AND PASS SELECTION RECT
         var options = {
-            selectionTop: this.state.displaySelectRect.top,
-            selectionLeft: this.state.displaySelectRect.left,
+            selectionTop: this.state.displaySelectRect.top - headerHeight,
+            selectionLeft: this.state.displaySelectRect.left - APP_STANDARDS.roadmapGroupWidth,
             selectionWidth: this.state.displaySelectRect.width,
             selectionHeight: this.state.displaySelectRect.height
         };
@@ -161,15 +101,11 @@ class Roadmap extends React.Component{
         })
     }
 
-
-    
     //RESET SELECTED ITEMS
     resetSelectedItem(e){
 
-        //INIT
-        e.preventDefault();
-
         //TEST SI BESOIN DE RESET
+        e.preventDefault();
         if(this.props.actions.isItemsSelected || this.props.actions.isItemsCopied){
             var options ={
                 id: null,
@@ -178,10 +114,7 @@ class Roadmap extends React.Component{
             }
             this.props.launchAppFunctions(e,"roadmapItemSelect", options)
         }
-
     }
-
-
 
     ////////////////////////////////
     /// ROADMAP COMPONENT RENDER ///
@@ -229,7 +162,6 @@ class Roadmap extends React.Component{
                 onMouseDown={isOnEditMode ? (e)=> this.handleSelectionStart(e) : null}
                 onMouseUp={isOnEditMode && this.state.displaySelectRect.display  ? (e) => this.handleSelectionStop(e) : null}
                 onMouseMove={isOnEditMode && this.state.displaySelectRect.display  ? (e)=> this.handleSelectionMouve(e) : null}
-                onMouseLeave={isOnEditMode && this.state.displaySelectRect.display  ? (e) => this.handleSelectionStop(e) : null}
             >
 
                  {/* SELECTOR */}

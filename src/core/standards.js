@@ -39,30 +39,35 @@ export const useInput = initialValue => {
 /// HELPERS //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
-//FIND ITEM INTERSECTION
-export const FUNC_FIND_INTERSECTE = (itemList, selectionRect, roadmapItemHeight) => {
+//DETERMINE IF SCROLL CLIQUED
+export const FUNC_IS_ON_SCROLL = (clientX, clientY) => {
 
-  //DEEP CLONE
-  var findItem = JSON.parse(JSON.stringify(itemList))
+  //INIT
+  var isOnScoll = false;
 
-  console.log(selectionRect)
-  console.log((findItem[0].top + roadmapItemHeight), selectionRect.selectionTop )
+  //GET APP OCNTENT ELEMENT
+  var appContent = document.getElementById("appContent")
 
-  //FILTER RELATED TO INTERSECTE
-  findItem = findItem.filter(
-    item => 
-      ((item.cumuTop + roadmapItemHeight) > selectionRect.selectionTop)
-      && (item.cumuTop < (selectionRect.selectionTop + selectionRect.selectionHeight))
-      && ((item.left + item.width) > selectionRect.selectionLeft)
-      && (item.left < selectionRect.selectionLeft + selectionRect.selectionWidth)
-  )
+  //TEST SCROLL BAR 
+  var isScrollX = appContent.scrollWidth > appContent.clientWidth;
+  var isScrollY = appContent.scrollHeight > appContent.clientHeight;
 
-  //CREATION ID LIST
-  var idList = findItem.map(item => item.id)
-  return idList
+  //TEST SUR Y
+  if (isScrollY 
+    && clientX >= (appContent.offsetLeft + appContent.offsetWidth - 8)
+    && clientX <= (appContent.offsetLeft + appContent.offsetWidth)
+  ){isOnScoll = true}
+
+  //TEST SUR X
+  if (isScrollX 
+    && clientY >= (appContent.offsetTop + appContent.offsetHeight - 8)
+    && clientY <= (appContent.offsetTop + appContent.offsetHeight)
+  ){isOnScoll = true}
+
+  //RETURN
+  return isOnScoll
 
 }
-
 
 //DETERMINE IF TASK AND MILESTONE SELECTED OR ONLY TASK OR ONLY MILESOTNE FOR COLOR SETTINGS
 export const FUNC_ROADMAP_SELECTED_ITEM = (itemList) => {
