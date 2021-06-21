@@ -1,0 +1,27 @@
+type GRID @model @auth(rules: [{allow: public}]) @key(name: "byTEMPLATE", fields: ["templateID"]) {
+  id: ID!
+  group: String
+  level: String
+  type: String
+  displayedId: String
+  globalUniqueId: String
+  description: String
+  label: String
+  status: String
+  baselineFinish: AWSDateTime
+  baselineStart: AWSDateTime
+  finish: AWSDateTime
+  start: AWSDateTime
+  templateID: ID
+}
+
+type TEMPLATE @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  description: String
+  public: Boolean
+  lastUpdateBy: String
+  lastUpdateDate: AWSDateTime
+  GRIDS: [GRID] @connection(keyName: "byTEMPLATE", fields: ["id"])
+}
+ 

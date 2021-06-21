@@ -1,0 +1,5 @@
+{
+  "AppSyncApiName": "Tlg2Web",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false
+}

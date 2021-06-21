@@ -140,7 +140,18 @@ class Roadmap extends React.Component{
     }
 
     //SELECTION STOP -------------------------------------------------------------------------------------------
-    handleSelectionStop(){
+    handleSelectionStop(e){
+
+        //LANCH SELECTION AND PASS SELECTION RECT
+        var options = {
+            selectionTop: this.state.displaySelectRect.top,
+            selectionLeft: this.state.displaySelectRect.left,
+            selectionWidth: this.state.displaySelectRect.width,
+            selectionHeight: this.state.displaySelectRect.height
+        };
+        this.props.launchAppFunctions(e, "roadmapGroupSelection", options)
+
+        //UPDATE STATE TO RESET THE SELECTION RECT
         this.setState(prevState =>{
             let displaySelectRect = prevState.displaySelectRect;
             displaySelectRect.display = false;
@@ -216,9 +227,9 @@ class Roadmap extends React.Component{
                 id="appContent" 
                 className="roadmapContent"
                 onMouseDown={isOnEditMode ? (e)=> this.handleSelectionStart(e) : null}
-                onMouseUp={isOnEditMode && this.state.displaySelectRect.display  ? () => this.handleSelectionStop() : null}
+                onMouseUp={isOnEditMode && this.state.displaySelectRect.display  ? (e) => this.handleSelectionStop(e) : null}
                 onMouseMove={isOnEditMode && this.state.displaySelectRect.display  ? (e)=> this.handleSelectionMouve(e) : null}
-                onMouseLeave={isOnEditMode && this.state.displaySelectRect.display  ? () => this.handleSelectionStop() : null}
+                onMouseLeave={isOnEditMode && this.state.displaySelectRect.display  ? (e) => this.handleSelectionStop(e) : null}
             >
 
                  {/* SELECTOR */}

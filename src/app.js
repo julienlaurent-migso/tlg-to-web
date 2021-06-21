@@ -40,7 +40,8 @@ import {
   FUNC_ARRAY_MIN_MAX,
   FUNC_ROADMAP_SIZE_INFO,
   FUNC_ROADMAP_GROUP_HEIGHT,
-  FUNCT_FIND_INDEX_ARRAY
+  FUNCT_FIND_INDEX_ARRAY,
+  FUNC_FIND_INTERSECTE
 } from './core/standards'
 import { withAuthenticator } from '@aws-amplify/ui-react'
 
@@ -463,6 +464,16 @@ class App extends React.Component{
       /////////////
       /// GROUP ///
       /////////////
+
+      //OPEN ADD MODAL ----------------------------------------------------------------------------------
+      case "roadmapGroupSelection":
+        console.log(FUNC_FIND_INTERSECTE(this.state.roadmapData, options, this.state.userSettings.roadmapItemHeight))
+        this.updateRoadmapData(
+          FUNC_FIND_INTERSECTE(this.state.roadmapData, options, this.state.userSettings.roadmapItemHeight), 
+          {action: "select"}, 
+          {type:"select", isCtrlPressed: e.ctrlKey},
+        )
+        break;
 
       //OPEN ADD MODAL ----------------------------------------------------------------------------------
       case "roadmapGroupOpenAddModal":

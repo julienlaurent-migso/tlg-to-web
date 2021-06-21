@@ -39,6 +39,31 @@ export const useInput = initialValue => {
 /// HELPERS //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
+//FIND ITEM INTERSECTION
+export const FUNC_FIND_INTERSECTE = (itemList, selectionRect, roadmapItemHeight) => {
+
+  //DEEP CLONE
+  var findItem = JSON.parse(JSON.stringify(itemList))
+
+  console.log(selectionRect)
+  console.log((findItem[0].top + roadmapItemHeight), selectionRect.selectionTop )
+
+  //FILTER RELATED TO INTERSECTE
+  findItem = findItem.filter(
+    item => 
+      ((item.cumuTop + roadmapItemHeight) > selectionRect.selectionTop)
+      && (item.cumuTop < (selectionRect.selectionTop + selectionRect.selectionHeight))
+      && ((item.left + item.width) > selectionRect.selectionLeft)
+      && (item.left < selectionRect.selectionLeft + selectionRect.selectionWidth)
+  )
+
+  //CREATION ID LIST
+  var idList = findItem.map(item => item.id)
+  return idList
+
+}
+
+
 //DETERMINE IF TASK AND MILESTONE SELECTED OR ONLY TASK OR ONLY MILESOTNE FOR COLOR SETTINGS
 export const FUNC_ROADMAP_SELECTED_ITEM = (itemList) => {
   let selectedItem = null;
