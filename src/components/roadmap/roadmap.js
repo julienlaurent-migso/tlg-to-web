@@ -37,7 +37,7 @@ class Roadmap extends React.Component{
     //SELECTION START ------------------------------------------------------------------------------------------
     handleSelectionStart(e){
 
-        if(!FUNC_IS_ON_SCROLL(e.clientX, e.clientY)){
+        if(!FUNC_IS_ON_SCROLL(e.clientX, e.clientY) && e.ctrlKey){
 
             //INIT
             e.preventDefault();
@@ -53,11 +53,9 @@ class Roadmap extends React.Component{
                     return displaySelectRect;
                 })
 
-                //RESET ONLY IF CTRL NOT PRESS
-                if(!e.ctrlKey){
-                    this.resetSelectedItem(e);
-                }
             }
+        }else{
+            this.resetSelectedItem(e);
         }
     }
 
@@ -193,6 +191,7 @@ class Roadmap extends React.Component{
                     headerOption={headerOption}
                     roadmapMonthWidth={roadmapMonthWidth}
                     headerOptionString={headerOptionString}
+                    groupSettings={groupSettings}
                 />
 
                 {/* CREATION DES GROUPES / SPINNER -------------------------------------------*/}

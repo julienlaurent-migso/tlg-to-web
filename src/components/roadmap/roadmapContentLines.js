@@ -22,15 +22,18 @@ export class RoadmapContentLines extends React.PureComponent{
             roadmapHeight,
             roadmapPeriod,
             headerOption, 
-            roadmapMonthWidth
+            roadmapMonthWidth,
+            groupSettings
         } = this.props
 
         //CLASS IF GROUP OR GLOBAL
         var blockClass = "roadmapRightSide flexStartCenter"
         var topContentLines = 0;
+        var heightAdjust = 0;
         if(isGlobal){
             blockClass = "roadmapContentLines flexStartCenter"
             topContentLines = FUNC_GET_ROADMAP_HEADER_HEIGHT(headerOption,roadmapMonthWidth) ;
+            heightAdjust = groupSettings.group ? groupSettings.group.length - 1 : 0;
         }
 
         /////////////////////////////
@@ -39,7 +42,7 @@ export class RoadmapContentLines extends React.PureComponent{
         return(
             <div 
                 className={blockClass} 
-                style={{height:roadmapHeight + topContentLines}}
+                style={{height:roadmapHeight + topContentLines + heightAdjust}}
             >
                 {/* YEAR BLOCK */}
                 <YearsBlock  

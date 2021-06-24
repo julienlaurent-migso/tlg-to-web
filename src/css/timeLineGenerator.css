@@ -493,6 +493,7 @@ amplify-sign-out {
   }
 }
 
+
 @keyframes slideInRight {
   from {
     margin-right: -100%;
@@ -706,10 +707,7 @@ amplify-sign-out {
   width:100%;
 }
 
-.data-grid-container .data-grid .cell > input{
-  height: 21px !important;
-  width:100%  !important;
-}
+
 
 /* ROADMAP CORE -------------------------------------------------------------------------- */
 
@@ -868,7 +866,7 @@ amplify-sign-out {
   left:200px;
   z-index: 0;
   background-color: white;
-  transition: all 0.5s ease 0s;
+   transition: all 0.5s ease 0s; 
 }
 .roadmapDragDateViewer{
   position: fixed;
@@ -894,6 +892,11 @@ amplify-sign-out {
   width:100%;
   border-bottom:1px dashed var(--border-color-gray-1);
   transition: top 0.5s ease 0s;
+}
+
+.roadmapItemMoveDiv{
+  padding:20px;
+  background-color: black;
 }
 
 

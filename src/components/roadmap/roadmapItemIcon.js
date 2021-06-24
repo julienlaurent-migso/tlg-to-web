@@ -2,10 +2,11 @@ import React from 'react'
 import {
     APP_ITEM_TYPES_ENRICH,
     APP_ITEM_TYPES,
-} from './constants'
+    APP_STANDARDS,
+} from '../../core/constants'
 import {
     FUNCT_FIND_INDEX,
-} from './standards'
+} from '../../core/standards'
 
 
 ///////////////////////////////////////////////////////////
@@ -29,9 +30,8 @@ export function ItemIcon (
     //SPECIFIC MILESTONE FOR TRIANGLE (NO TIRANGLE ICON IN GOOGLE FONT)
     if(type === APP_ITEM_TYPES.milestone){
         iconJSX= [
-            <strong 
+            <div 
                 key={"icon-" + id}
-                id={id} 
                 className={isOnEditMode ? "grabCursor" : null} 
                 style={{
                     display:"inline-block",
@@ -43,25 +43,24 @@ export function ItemIcon (
                     borderLeft:(roadmapItemHeight - 8)/2 + "px solid transparent",
                 }}
             >
-            </strong>
+            </div>
         ]
 
     //OTHER
     }else{
         iconJSX= [
-            <strong 
+            <div 
                 key={"icon-" + id}
-                id={id} 
                 className={isOnEditMode ? "grabCursor material-icons" : "material-icons"} 
                 style={{
-                    color:  iconColor,
+                    color: type === APP_ITEM_TYPES.task ? APP_STANDARDS.itemTaskColorIcon : iconColor,
                     fontSize:roadmapItemHeight + "px",
                     transform:APP_ITEM_TYPES_ENRICH[index].rotate ? 
                         "rotate(" + APP_ITEM_TYPES_ENRICH[index].rotate +")" 
                     :null}}
             >
                 {APP_ITEM_TYPES_ENRICH[index].icon}
-            </strong>
+            </div>
         ]
     }
 

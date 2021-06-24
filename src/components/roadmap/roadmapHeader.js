@@ -74,7 +74,7 @@ export class RoadmapHeader extends React.PureComponent{
                         maxWidth: APP_STANDARDS.roadmapGroupWidth + "px"
                     }}
                 >
-                    FIRST 
+                    ctrl pour select
                 </div>
 
                 {/* CALENDAR ---------------------------------------------------------------------- */}

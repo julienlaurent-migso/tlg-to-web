@@ -34,13 +34,15 @@ import {
 } from './backend/roadmapData'
 import {
   AddItemsModal,
-  ColorsItemsModal
+  ColorsItemsModal,
+  DateRangeFilterModal
 } from './core/modal'
 import {
   FUNC_ARRAY_MIN_MAX,
   FUNC_ROADMAP_SIZE_INFO,
   FUNC_ROADMAP_GROUP_HEIGHT,
   FUNCT_FIND_INDEX_ARRAY,
+  FUNC_GET_ROADMAP_FIRST_YEAR_AFTER_MOVE,
 } from './core/standards'
 import {  FUNC_SELECTOR_FIND_INTERSECTE} from './core/selector'
 import { withAuthenticator } from '@aws-amplify/ui-react'
@@ -210,11 +212,13 @@ class App extends React.Component{
       let prevRoadmapData = [...prevState.roadmapData];
       let roadmapData = ROADMAP_DATE_RANGE(prevRoadmapData, firstPeriod, lastPeriod, this.state.userSettings);
       let roadmapPeriod = {...prevState.roadmapPeriod};
+      let appSettings = {...prevState.appSettings}
       roadmapPeriod.roadmapFirstPeriod = firstPeriod;
       roadmapPeriod.roadmapLastPeriod = lastPeriod;
       roadmapPeriod.roadmapFirstYear = firstYear;
       roadmapPeriod.roadmapLastYear = lastYear;
-      return { roadmapData, roadmapPeriod }; 
+      appSettings.actionModal = null;
+      return { roadmapData, roadmapPeriod, appSettings }; 
     })
   }
 
@@ -264,10 +268,12 @@ class App extends React.Component{
   ///////////////////////////////////
   /// MOVE DRAG AND DROP & RESIZE ///
   ///////////////////////////////////
-  updateMoveRoadmapData(type, itemId, diffX, positionY, groupKey){
+  updateMoveRoadmapData(type, itemId, diffX, positionY, groupKey, itemLeft){
       this.setState(prevState => {
         let prevRoadmapData = [...prevState.roadmapData];
         let roadmapData;
+        let roadmapPeriod = {...prevState.roadmapPeriod}
+        console.log(roadmapPeriod)
 
         //RESIZE ----------------------------------------------
         if(type === "resize"){
@@ -282,20 +288,39 @@ class App extends React.Component{
         
         //DRAG & DROP ------------------------------------------
         }else{
+
+          //TEST IS
+          let isSameFirstYear = 
+            diffX < 0 ? 
+            FUNC_GET_ROADMAP_FIRST_YEAR_AFTER_MOVE(itemLeft,diffX, this.state.appSettings.roadmapMonthWidth, this.state.roadmapPeriod.roadmapFirstYear) 
+            : {roadmapFirstYear: this.state.roadmapPeriod.roadmapFirstYear, addYear: false, nbYearToSub: 0};
+          
+          //ROADMAP DATA
           roadmapData = ROADMAP_DATA_DRAG_DROP(
             prevRoadmapData, 
-            this.state.roadmapPeriod.roadmapFirstYear, 
+            isSameFirstYear.roadmapFirstYear, 
             this.state.appSettings.roadmapMonthWidth, 
             itemId, 
             diffX, 
             positionY,
-            groupKey,  
-            this.state.userSettings
+            this.state.userSettings,
+            isSameFirstYear.addYear,
+            isSameFirstYear.nbYearToSub
           );
+
+          //FIND MIN MAX YEAR
+          let minMaxDate = FUNC_ARRAY_MIN_MAX(roadmapData, "start", "finish")
+
+          //UPDATE PERIOD STATE
+          roadmapPeriod.roadmapFirstPeriod = null
+          roadmapPeriod.roadmapFirstYear = minMaxDate.min.getFullYear();
+          roadmapPeriod.roadmapLastPeriod = null
+          roadmapPeriod.roadmapLastYear = minMaxDate.max.getFullYear();
+
         }
 
         //RETUNR
-        return { roadmapData }; 
+        return { roadmapData, roadmapPeriod }; 
       })
   }
 
@@ -448,7 +473,8 @@ class App extends React.Component{
           options.id, 
           options.diffX, 
           options.positionY, 
-          options.groupKey
+          options.groupKey,
+          options.left
         )
         break;
 
@@ -520,6 +546,12 @@ class App extends React.Component{
     }
   }
 
+//DRAG OVER ---------------------------------------------------
+dragOver = (e) => {
+  e.preventDefault()
+  e.dataTransfer.dropEffect = "move";
+}
+
   ////////////////////////////
   /// APP COMPONENT RENDER ///
   ////////////////////////////
@@ -540,7 +572,11 @@ class App extends React.Component{
     /// APP COMPONENT RETURN ///
     ////////////////////////////
     return(
-      <main id="appMain" onMouseDown={this.state.appSettings.isOnEditMode ? (e) => e.preventDefault() : null}>
+      <main id="appMain" 
+       onMouseDown={
+         this.state.appSettings.isOnEditMode 
+         && !this.state.appSettings.actionModal ? (e) => e.preventDefault() : null}
+      >
         <BrowserRouter>
 
           {/* HEADER */}
@@ -591,7 +627,7 @@ class App extends React.Component{
                         roadmapMinMaxDate={roadmapData ? FUNC_ARRAY_MIN_MAX(roadmapData, "start", "finish") : null}
                         roadmapFirstPeriod={this.state.roadmapPeriod.roadmapFirstPeriod}
                         roadmapLastPeriod={this.state.roadmapPeriod.roadmapLastPeriod}
-                        isLinksDisplayed={this.state.isLinksDisplayed}
+                        isLinksDisplayed={this.state.appSettings.isLinksDisplayed}
                         launchAppFunctions={this.launchAppFunctions}
                       />
 
@@ -648,13 +684,23 @@ class App extends React.Component{
             />
           :null}
 
-
           {/* ADD MODAL ------------------OK---------------------------------------------------------------*/}
           {this.state.appSettings.actionModal === "addItem" ?
             <AddItemsModal 
               updateState={this.updateState}
               roadmapNewItemOption={this.state.appSettings.roadmapNewItemOption}
               userSettings={userSettings}
+              launchAppFunctions={this.launchAppFunctions}
+            />
+          :null}
+
+          {/* DATE FILTER MODAL ------------------OK-------------------------------------------------------*/}
+          {this.state.appSettings.actionModal === "dateRange" ?
+            <DateRangeFilterModal 
+              updateState={this.updateState}
+              roadmapMinMaxDate={FUNC_ARRAY_MIN_MAX(roadmapData, "start", "finish")}
+              roadmapFirstPeriod={this.state.roadmapPeriod.roadmapFirstPeriod}
+              roadmapLastPeriod={this.state.roadmapPeriod.roadmapLastPeriod}
               launchAppFunctions={this.launchAppFunctions}
             />
           :null}

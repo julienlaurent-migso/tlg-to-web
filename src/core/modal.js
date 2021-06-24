@@ -47,7 +47,7 @@ export function ItemInfoModal ({item, resetModal}) {
 /// FILTER MODAL ////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-export function DateRangeFilterModal ({resetModal, roadmapMinMaxDate,roadmapFirstPeriod,roadmapLastPeriod, launchAppFunctions}) {
+export function DateRangeFilterModal ({updateState, roadmapMinMaxDate,roadmapFirstPeriod,roadmapLastPeriod, launchAppFunctions}) {
 
     //INIT
     var initStartDate;
@@ -85,8 +85,6 @@ export function DateRangeFilterModal ({resetModal, roadmapMinMaxDate,roadmapFirs
         //UPDATE APPSET
         launchAppFunctions(e, "roadmapHeaderRangePeriod", options);
 
-        //CLOSE MODAL
-        resetModal(e);
     }
 
     //COMPONENT RENDER
@@ -100,7 +98,7 @@ export function DateRangeFilterModal ({resetModal, roadmapMinMaxDate,roadmapFirs
                         <div className="modal-header modalBlockBg">
                             <span className="material-icons" style={{marginRight:"10px"}} >date_range</span>
                             <h5 className="modal-title">Date Range Selection</h5>
-                            <button type="button" className="btn-close" onClick={(e) => resetModal(e)}></button>
+                            <button type="button" className="btn-close" onClick={() => updateState("appSettings", {actionModal: null})}></button>
                         </div>
                         <form onSubmit={(e) => handleSubmit(e)}>
                             <div   
@@ -125,7 +123,7 @@ export function DateRangeFilterModal ({resetModal, roadmapMinMaxDate,roadmapFirs
                     </div>
                 
             </div>
-            <div className="modalBg" onClick={(e) => resetModal(e)}></div>
+            <div className="modalBg" onClick={() => updateState("appSettings", {actionModal: null})}></div>
 
         </React.Fragment>
         , document.body
@@ -190,35 +188,43 @@ export function DeleteItemsModal ({items,updateState,actionDeleteItems}) {
 
 export function AddItemsModal ({updateState, roadmapNewItemOption, launchAppFunctions, userSettings}) {
 
-    //CONSTRUCTOR
-    const {value:multiplier, bind:bindMultiplier} = useInput(1);
-
     //USE STATE
     const [type, setType] = useState(APP_ITEM_TYPES.milestone);
-    const [specific, setSpecific] = useState({level: false, group:false});
+    const [specific, setSpecific] = useState({level: false, group:false, multiplier:1});
 
     //CHANGE
     const changeHandler = e => {
         setSpecific({...specific, [e.target.name]: !specific[e.target.name]})
     }
 
+    //Specific for number
+    const changeHandlerMultiplier = e => {
+
+        let multiNumber = 1
+        let userValue = Number(e.target.value)
+        if (userValue){
+            multiNumber = userValue
+        }
+        setSpecific({...specific, [e.target.name]: multiNumber})
+    }
+
     //SUBMIT FORM
     const handleSubmit = (e) => {
         
         //INT
-        e.preventDefault()
+    
         var itemOject = [];
         
         //CAL MULTIPLIER
         var newMultiplier = 1;
-        if(multiplier && multiplier !== ""){newMultiplier = Number(multiplier);}
+        if(specific.multiplier && specific.multiplier !== ""){newMultiplier = Number(specific.multiplier);}
+        console.log(specific.multiplier )
 
         //LOOP
-        var currentItem;
+        var currentItem= {};;
         for (var i = 0 ; i < newMultiplier ; i++){
 
-            //RESET
-            currentItem = {};            
+            //RESET         
             currentItem.type = type;
             currentItem.optionLabel = false;
             currentItem.name = APP_TXT_TBD;
@@ -326,7 +332,8 @@ export function AddItemsModal ({updateState, roadmapNewItemOption, launchAppFunc
                             >
                                 <div className="modalGroupTitle">Multiply the number of Added Item</div>
                                 <div className="flexStartCenter">
-                                    <input type="text" {...bindMultiplier} className="form-control" name="number" required maxLength="3" style={{width:"52px"}}/>
+
+                                    <input type="text" className="form-control" name="multiplier" maxLength="3" style={{width:"70px"}} defaultValue={specific.multiplier} onChange={changeHandlerMultiplier} />
                                     
                                 </div>
                             </div>
@@ -348,7 +355,7 @@ export function AddItemsModal ({updateState, roadmapNewItemOption, launchAppFunc
                                     <div className="form-check form-switch" style={{fontSize:"14px"}}>
                                         <input className="form-check-input" type="checkbox" name="group" onChange={changeHandler}/>
                                         <label className="form-check-label" >Add item(s) in a new Domain group</label>
-                                    </div>
+                                    </div>  
                                    
                                 </div>
                             </div>

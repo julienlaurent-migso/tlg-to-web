@@ -523,8 +523,9 @@ export const ROADMAP_DATA_DRAG_DROP = (
     itemId, 
     diffX, 
     itemTopPosition,
-    groupKey, 
-    userSettings
+    userSettings,
+    addYear,
+    nbYearToSub
 ) =>{
 
     //INIT
@@ -540,10 +541,23 @@ export const ROADMAP_DATA_DRAG_DROP = (
         /// GESTION DES POSITION LEFT RIGHT WIDTH ///
         /////////////////////////////////////////////
 
+
         //RECALCUL DES LEFT POSITION
         transformedData[itemIndex].leftFinish = transformedData[itemIndex].leftFinish + diffX
         if(transformedData[itemIndex].leftStart){transformedData[itemIndex].leftStart = transformedData[itemIndex].leftStart + diffX};
 
+        //RECTIF IF ADD YEAR
+        if(addYear){
+
+            //TEST SI TASK 
+            if(transformedData[itemIndex].type === APP_ITEM_TYPES.task || transformedData[itemIndex].type === APP_ITEM_TYPES.consoTask){
+                transformedData[itemIndex].leftStart = nbYearToSub*(roadmapMonthWidth*12) + transformedData[itemIndex].leftStart
+                transformedData[itemIndex].leftFinish = transformedData[itemIndex].leftStart + transformedData[itemIndex].width
+            }else{
+                transformedData[itemIndex].leftFinish = nbYearToSub*(roadmapMonthWidth*12) + transformedData[itemIndex].leftFinish 
+            }
+        }
+        
         //TEST SI TASK 
         if(transformedData[itemIndex].type === APP_ITEM_TYPES.task || transformedData[itemIndex].type === APP_ITEM_TYPES.consoTask){
 
@@ -601,7 +615,6 @@ export const ROADMAP_DATA_DRAG_DROP = (
         //TROUVER GROUP ITEMS LIST
         //var itemsGroup = transformedData.filter(item => item.groupKey === groupKey);
         var indexMatchTop = transformedData.findIndex(item => itemTopPosition < item.cumuTop - userSettings.roadmapItemSpaceLine/2) - 1;
-        console.log(itemTopPosition, indexMatchTop)
 
         //RECTIF SI EN DESSOUS
         if(indexMatchTop === -2){indexMatchTop = transformedData.length -1}
@@ -612,6 +625,79 @@ export const ROADMAP_DATA_DRAG_DROP = (
         transformedData[itemIndex].group = transformedData[indexMatchTop].group;
         transformedData[itemIndex].level = transformedData[indexMatchTop].level
         transformedData[itemIndex].sort = transformedData[indexMatchTop].sort
+
+        ////////////////////////////////////////////////////
+        /// IF ADD YEAR - ADD LETF RELATED TO ADDED YEAR ///
+        ////////////////////////////////////////////////////
+
+        let minDate = new Date(Math.min.apply(Math, transformedData.map(function(o) { return o.start; })));
+        let nbYearDiff = roadmapFirstYear - minDate.getFullYear()
+
+        //REPOSITIONNEMENT DES ITEMS
+        if(addYear || nbYearDiff < 0){
+
+            transformedData = transformedData.map(item => {
+
+                //MOVE ALL
+                item.updateTracker = item.updateTracker + 1;
+
+                //ONLY IF NOT MOVED ID
+                if(item.id !== itemId || nbYearDiff < 0){
+
+                    //RECALCUL DES LEFT POSITION
+                    if(addYear){
+                        item.leftFinish = item.leftFinish + nbYearToSub*(roadmapMonthWidth*12)
+                        if(item.leftStart){item.leftStart = item.leftStart + nbYearToSub*(roadmapMonthWidth*12)};
+                    }else{
+                        item.leftFinish = item.leftFinish + nbYearDiff*(roadmapMonthWidth*12)
+                        if(item.leftStart){item.leftStart = item.leftStart + nbYearDiff*(roadmapMonthWidth*12)};
+                    }
+                    
+                    //TEST SI TASK 
+                    if(item.type === APP_ITEM_TYPES.task || item.type === APP_ITEM_TYPES.consoTask){
+
+
+                        //UPDATE LEFT
+                        item.left = item.leftStart
+                        if(item.optionShadow && item.leftBaselineStart && item.leftBaselineStart < item.leftStart){
+                            item.left = item.leftBaselineStart
+                        }
+                        
+                        //UPDATE RIGHT & WIDTH
+                        item.right = item.leftFinish
+                        item.width = item.right - item.left
+                        if(item.optionShadow && item.leftBaselineFinish && item.leftBaselineFinish > item.leftFinish){
+                            item.right = item.leftBaselineFinish
+                            item.width = item.right - item.left
+                        }
+
+                    }else{
+
+                        
+                        //LEFT LOGO + TXT
+                        item.left = item.leftFinish - (userSettings.roadmapItemHeight / 2)
+                        if(item.optionShadow && item.leftBaselineFinish && item.leftBaselineFinish > item.leftFinish){
+                            item.left = item.leftBaselineFinish - (userSettings.roadmapItemHeight / 2)
+                        }
+
+                        //WIDTH
+                        item.width = userSettings.roadmapItemHeight + item.txtWidth
+
+                        //TEST IF OPTION LABEL TRUE
+                        if(item.optionLabel){
+                            item.left = item.left - item.txtWidth
+                        }
+
+                        //RIGHT
+                        item.right = item.left + item.width
+                    }
+
+                }
+                return item
+            })
+
+        }
+
 
         //RETURN TRANSFORMED DATA
         return ROADMAP_TOP_POSITION(transformedData, userSettings)

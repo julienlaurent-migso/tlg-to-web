@@ -3,7 +3,6 @@ import {
     AppTooltip,
     FUNC_GET_STEP_ZOOM
 } from '../../core/standards'
-import { DateRangeFilterModal } from '../../core/modal'
 import {APP_STANDARDS} from '../../core/constants'
 
 ////////////////////////
@@ -87,18 +86,16 @@ class RoadmapSideBar extends React.Component{
     render(){
 
         console.log("RENDER : SIDEBAR")
+        
 
         //PROPS
         const { 
             roadmapMonthWidth,
             isOnEditMode,
             isRoadmapData,
-            roadmapMinMaxDate,
             roadmapFirstPeriod,
-            roadmapLastPeriod,
             isLinksDisplayed,
             updateState,
-            launchAppFunctions,
         } = this.props
 
         //ZOOM IN OUT
@@ -155,9 +152,9 @@ class RoadmapSideBar extends React.Component{
 
                     {/* VIEW MODE */}
                     <button 
-                        className={isOnEditMode ? "flexCenterCenter buttonSideBar " : "flexCenterCenter buttonSideBar buttonSideBarSelected" }
+                        className={isRoadmapData && isOnEditMode ? "flexCenterCenter buttonSideBar " : "flexCenterCenter buttonSideBar buttonSideBarSelected" }
                         data-tip data-for="tooltipViewMode"
-                        onClick={isOnEditMode? () => updateState("appSettings",{isOnEditMode : false}) : null} 
+                        onClick={isRoadmapData && isOnEditMode? () => updateState("appSettings",{isOnEditMode : false}) : null} 
                     >
                         <span className="material-icons" >near_me</span>
                     </button>
@@ -178,10 +175,11 @@ class RoadmapSideBar extends React.Component{
                     </button>
 
                     {/* EDIT MODE */}
+                    
                     <button
-                        className={isOnEditMode ? "flexCenterCenter buttonSideBar buttonSideBarSelected" : "flexCenterCenter buttonSideBar " }
+                        className={isRoadmapData && isOnEditMode ? "flexCenterCenter buttonSideBar buttonSideBarSelected" : "flexCenterCenter buttonSideBar " }
                         data-tip data-for="tooltipEditMode"
-                        onClick={isOnEditMode ? null : () => updateState("appSettings",{isOnEditMode : true})}
+                        onClick={isRoadmapData && isOnEditMode ? null : () => updateState("appSettings",{isOnEditMode : true})}
                     >
                         <span className="material-icons">mode_edit</span>
                     </button>
@@ -206,7 +204,7 @@ class RoadmapSideBar extends React.Component{
                     <button 
                         className={roadmapFirstPeriod ? "flexCenterCenter buttonSideBar buttonSideBarSelected" : "flexCenterCenter buttonSideBar" }
                         data-tip data-for="tooltipDateRange"
-                        onClick={isRoadmapData ? () => this.setState({modalShow:true})  : null }
+                        onClick={isRoadmapData ? () => updateState("appSettings", {actionModal:"dateRange"})  : null }
                     >
                         <span className="material-icons" >date_range</span>
                     </button>
@@ -333,18 +331,6 @@ class RoadmapSideBar extends React.Component{
                 <AppTooltip tooltipId="tooltipDateRange" tooltipPlacement="right" tooltipContent="Period Range Selection" theme="light"/>
                 <AppTooltip tooltipId="tooltipCustomFilter" tooltipPlacement="right" tooltipContent="Custom Filters" theme="light"/>
                 <AppTooltip tooltipId="tooltipResetFilter" tooltipPlacement="right" tooltipContent="Reset All Filters" theme="light"/>
-                
-                {/* MODAL INFO ---------------------------------------------------------------------------------------------- */}
-                {this.state.modalShow ?
-                    <DateRangeFilterModal 
-                        updateState={updateState}
-                        resetModal={this.resetModal} 
-                        roadmapMinMaxDate={roadmapMinMaxDate}
-                        roadmapFirstPeriod={roadmapFirstPeriod}
-                        roadmapLastPeriod={roadmapLastPeriod}
-                        launchAppFunctions={launchAppFunctions}
-                    />
-                :null}
 
             </section>
         )

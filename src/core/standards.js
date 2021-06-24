@@ -263,10 +263,38 @@ export const FUNC_GET_WEEK_NUMBER = (date) =>{
   return 1 + Math.round(((newDate.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
 }
 
+//FIND NEW FIRST AND LAST YEAR RELATED TO ITEM MOVE
+export const FUNC_GET_ROADMAP_FIRST_YEAR_AFTER_MOVE = (itemLeft, diffX, roadmapMonthWidth, firstYear) =>{
+
+  //IF < 0
+  if ((itemLeft + diffX) < 0){
+    let newFirstYear = -(itemLeft + diffX) / (roadmapMonthWidth*12)
+    let nbYearToSub = Math.ceil(newFirstYear)
+    newFirstYear = firstYear - nbYearToSub
+
+    //MODIF DETECTED
+    return {
+      roadmapFirstYear: newFirstYear,
+      addYear: true,
+      nbYearToSub: nbYearToSub,
+    }
+    
+  }else{
+
+    //NO MODIF
+    return {
+      roadmapFirstYear: firstYear, 
+      addYear: false,
+      nbYearToSub: 0,
+    }
+  }
+
+}
+
 //GET ROADMAP HEADER 
 export const FUNC_GET_ROADMAP_HEADER_HEIGHT = (headerOption, roadmapMonthWidth) => {
   const lineHeight = APP_STANDARDS.roadmapHeaderLineHeight;
-  var headerHeight = lineHeight + 2;
+  var headerHeight = lineHeight ;
   if(headerOption.isRoadmapQuaters && roadmapMonthWidth >= APP_STANDARDS.roadmapMinDisplayQuater){headerHeight = headerHeight + lineHeight + 1};
   if(headerOption.isRoadmapMonths && roadmapMonthWidth >= APP_STANDARDS.roadmapMinDisplayMonth){headerHeight = headerHeight + lineHeight + 1};
   if(headerOption.isRoadmapMonths && headerOption.isRoadmapWeeks  && roadmapMonthWidth >= APP_STANDARDS.roadmapMinDisplayWeek){headerHeight = headerHeight + lineHeight + 1};

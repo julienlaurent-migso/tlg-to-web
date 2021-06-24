@@ -57,12 +57,8 @@ export class UpdaterWithInput extends React.PureComponent{
       e.preventDefault();
       e.stopPropagation();
 
-      //SI CTRL PRESS ALORS ON EST SUR QUE PAS DE DOUBLE CLICK
-      var setTime = e.ctrlKey ? 0 : 300;
-
-      //TEST IF WEE NEED TO DIRE 1 click 
-      setTimeout(() => {
-          if(!this.state.displayInput){
+      
+          if(!this.state.displayInput && e.ctrlKey){
 
             //INIT
             var value = "select";
@@ -79,7 +75,7 @@ export class UpdaterWithInput extends React.PureComponent{
             this.props.launchAppFunctions(e,"roadmapItemSelect",options)
 
           }
-      }, setTime);
+     
     }
 
     //STOP SELECTION AND PROPAGATION

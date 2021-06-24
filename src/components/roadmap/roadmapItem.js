@@ -1,12 +1,12 @@
 import React from 'react'
-import {UpdaterWithInput} from '../../core/NewUpdater'
+import {UpdaterWithInput} from '../../core/updater'
 import {ItemInfoModal} from '../../core/modal'
 import {DateViewer} from '../../core/dateViewer'
 import {
     APP_STANDARDS, 
     APP_ITEM_TYPES
 } from '../../core/constants'
-import {ItemIcon} from '../../core/NewItemIcon'
+import {ItemIcon} from './roadmapItemIcon'
 import {ContextMenu} from '../../core/contextMenu'
 import {FUNC_COLOR_MNGT} from '../../core/standards'
 
@@ -28,14 +28,8 @@ class RoadmapItem extends React.PureComponent{
         this.state={
             isOnDrag:false,
             stopTransition:false,
-
-            //LIMITE
             limit: {left:0, rectifLeft:0 ,right:0, rectifRight:0},
-
-            //POSITION
             deltaPosition: {initX:0, x: 0, initY:0, y: 0},
-
-            //RESIZE
             itemWidth: this.props.item.width,
             deltaWidth: {initX:0, initWidth:0, diffX:0},
             dateViewer: {initX:0, x:0, y:0},
@@ -60,32 +54,26 @@ class RoadmapItem extends React.PureComponent{
         //INIT
         e.preventDefault()
         e.dataTransfer.effectAllowed = "move";
+        
+        //CALCUL DIFF
+        const {initX, initY} = this.state.deltaPosition;  
+        var diffX = e.pageX - initX;
+        var diffY = e.pageY - initY;
+        var dateViewerX = this.state.dateViewer.initX + diffX;
 
-        //LIMIT TEST
-        if(e.pageX >= (this.state.limit.left + this.state.limit.rectifLeft) 
-        && (e.pageX + document.getElementById("appContent").scrollLeft) <= (this.state.limit.right + this.state.limit.rectifRight )){
-
-            const {initX, initY} = this.state.deltaPosition; 
-
-            //CALCUL DIFF
-            var diffX = e.pageX - initX;
-            var diffY = e.pageY - initY;
-            var dateViewerX = this.state.dateViewer.initX + diffX;
-
-            //SET STATE
-            if (e.pageX !== 0 && e.pageY !==0){
-                this.setState(prevState => {
-                    let deltaPosition = {...prevState.deltaPosition};
-                    deltaPosition.x = diffX;
-                    deltaPosition.y = diffY;
-                    let dateViewer = {...prevState.dateViewer};
-                    dateViewer.x = dateViewerX
-                    return { 
-                        deltaPosition, 
-                        dateViewer,
-                    }; 
-                })
-            }
+        //SET STATE
+        if (e.pageX !== 0 && e.pageY !==0){
+            this.setState(prevState => {
+                let deltaPosition = {...prevState.deltaPosition};
+                deltaPosition.x = diffX;
+                deltaPosition.y = diffY;
+                let dateViewer = {...prevState.dateViewer};
+                dateViewer.x = dateViewerX
+                return { 
+                    deltaPosition, 
+                    dateViewer,
+                }; 
+            })
         }
     };
 
@@ -96,35 +84,25 @@ class RoadmapItem extends React.PureComponent{
         e.preventDefault()
         e.dataTransfer.effectAllowed = "move";
 
-        //MANAGE RIGHT
-        if(e.pageX !==0 && (e.pageX + document.getElementById("appContent").scrollLeft) <= (this.state.limit.right + this.state.limit.rectifRight)){
-
-            //INIT
-            const {initX, initWidth} = this.state.deltaWidth;
-            var diffX = e.pageX - initX;
-            var newWidth =  initWidth + diffX;
-            var dateViewerX = this.state.dateViewer.initX + diffX;
+        //INIT
+        const {initX, initWidth} = this.state.deltaWidth;
+        var diffX = e.pageX - initX;
+        var newWidth =  initWidth + diffX;
+        var dateViewerX = this.state.dateViewer.initX + diffX;
             
-            //SET SEULEMETN SI SUP A 0
-            if(newWidth > 0 ){
-                this.setState(prevState => {
-                    let deltaWidth = {...prevState.deltaWidth};
-                    deltaWidth.diffX = diffX;
-                    let dateViewer = {...prevState.dateViewer};
-                    dateViewer.x = dateViewerX
-                    return { 
-                        deltaWidth, 
-                        dateViewer,
-                        itemWidth:newWidth
-                    }; 
-                })
-            }
-        }else{
+        //SET SEULEMETN SI SUP A 0
+        if(newWidth > 0 ){
             this.setState(prevState => {
                 let deltaWidth = {...prevState.deltaWidth};
-                deltaWidth.diffX = 0;
-                return { deltaWidth }; 
-            });
+                deltaWidth.diffX = diffX;
+                let dateViewer = {...prevState.dateViewer};
+                dateViewer.x = dateViewerX
+                return { 
+                    deltaWidth, 
+                    dateViewer,
+                    itemWidth:newWidth
+                }; 
+            })
         }
     };
 
@@ -214,8 +192,14 @@ class RoadmapItem extends React.PureComponent{
     //ON MOVE STOP -----------------------------------------------------------------------------------------
     onMoveStop = (type, itemId) => {
     
+
+
         //INIT
         var options={};
+
+        //TEST IF OUT OF LIMIT AND GENERATE PREVIOUS YEAR OF NEXT YEAR
+        //if(e.pageX !==0 && (e.pageX + document.getElementById("appContent").scrollLeft) <= (this.state.limit.right + this.state.limit.rectifRight)){
+
 
         //RESIZE FINISH TASK
         if(type === "resize"){
@@ -224,7 +208,8 @@ class RoadmapItem extends React.PureComponent{
             options={
                 action:"resize",
                 id:itemId,
-                diffX: this.state.deltaWidth.diffX
+                diffX: this.state.deltaWidth.diffX,
+                left: this.props.item.left
             }
 
             //STOP DRAG & LAUNCH POSITION REGARDING NEW TASK RIGHT
@@ -249,6 +234,7 @@ class RoadmapItem extends React.PureComponent{
                 diffX:x,
                 positionY:this.props.item.cumuTop + y,
                 groupKey:this.props.groupKey,
+                left: this.props.item.left
             }
 
             //!!!!!!!!!!!!!!!!!!!!
@@ -332,7 +318,7 @@ class RoadmapItem extends React.PureComponent{
             launchAppFunctions
         } = this.props;
 
-        
+
 
         //IS TASK
         var isTask = item.type === APP_ITEM_TYPES.task || item.type === APP_ITEM_TYPES.consotask;

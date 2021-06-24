@@ -1,7 +1,7 @@
 import React from 'react';
 import {ContextMenu} from '../../core/contextMenu'
 import {APP_STANDARDS} from '../../core/constants'
-import RoadmapItem from './NewRoadmapItem'
+import RoadmapItem from './roadmapItem'
 
 /////////////////////////
 /// ROADMAP COMPONENT ///
@@ -94,7 +94,12 @@ class RoadmapGroup extends React.PureComponent{
         /// ROADMAP COMPONENT RETURN ///
         ////////////////////////////////
         return(
-            <div className="roadmapContentGroup">
+            <div 
+                className="roadmapContentGroup" 
+                onMouseDown={null}
+                onMouseMove={null}
+                onMouseUp={null}
+            >
 
                     <div 
                         className="roadmapGroup flexStartStrech" 
@@ -143,7 +148,7 @@ class RoadmapGroup extends React.PureComponent{
                                             className="roadmapLevelBorder"
                                             style={{
                                                 position:"absolute", 
-                                                top: item.top - userSettings.roadmapItemSpaceLine/2
+                                                top: item.top - userSettings.roadmapItemSpaceLine/2,
                                             }}
                                             onDragOver={(e) => this.dragOver(e)}
                                         ></div>

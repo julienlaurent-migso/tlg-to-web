@@ -107,6 +107,7 @@ function Home (){
         <section id="appContent" className="homeContent">
 
 
+
             <input type="button" value="Load Template" onClick={setPromiseTemplate} />
 
             <br/>

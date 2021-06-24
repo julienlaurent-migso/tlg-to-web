@@ -4461,7 +4461,7 @@ let initialData = [
             },
             {
                 "sort": "57",
-                "group": "Structured View 3",
+                "group": "Structured View 4",
                 "level": "5",
                 "type": "Milestone",
                 "id": "TLG000057",
@@ -4474,7 +4474,7 @@ let initialData = [
             },
             {
                 "sort": "58",
-                "group": "Structured View 3",
+                "group": "Structured View 4",
                 "level": "2",
                 "type": "Output",
                 "id": "TLG000058",
@@ -4487,7 +4487,7 @@ let initialData = [
             },
             {
                 "sort": "59",
-                "group": "Structured View 3",
+                "group": "Structured View 4",
                 "level": "2",
                 "type": "Output",
                 "id": "TLG000059",
@@ -4500,7 +4500,7 @@ let initialData = [
             },
             {
                 "sort": "60",
-                "group": "Structured View 3",
+                "group": "Structured View 4",
                 "level": "2",
                 "type": "Output",
                 "id": "TLG000060",
