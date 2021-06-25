@@ -13,8 +13,8 @@ export function DateViewer ({height, width, left, top, roadmapFirstYear, roadmap
     var newLeft = left;
 
     //MAX LEFT RIGHT SIDE
-    if(left + width/2 < roadmapHeader.left){newLeft= roadmapHeader.left - width/2};
-    if(left + width/2 > roadmapHeader.left + roadmapHeader.width){newLeft= roadmapHeader.left + roadmapHeader.width - width/2}
+   if(left + width/2 < roadmapHeader.left){newLeft= roadmapHeader.left - width/2};
+    //if(left + width/2 > roadmapHeader.left + roadmapHeader.width){newLeft= roadmapHeader.left + roadmapHeader.width - width/2}
 
     //GET DATE
     var newDate = FUNC_FIND_DATE_FROM_LEFT(left - roadmapHeader.left + width/2, roadmapFirstYear, roadmapMonthWidth);

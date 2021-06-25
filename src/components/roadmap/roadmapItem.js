@@ -32,6 +32,7 @@ class RoadmapItem extends React.PureComponent{
             deltaPosition: {initX:0, x: 0, initY:0, y: 0},
             itemWidth: this.props.item.width,
             deltaWidth: {initX:0, initWidth:0, diffX:0},
+            initScroll: {initX:0, initY:0},
             dateViewer: {initX:0, x:0, y:0},
             modalShow:false,
             displayContextMenu: false,
@@ -51,15 +52,18 @@ class RoadmapItem extends React.PureComponent{
     //GET X AND Y POSITION OF DRAGGED ELEMENT -------------------------------------------------------------------
     handleDrag = (e) => {
 
+        ///APP CONTENT ELEMENT
+        const appContent = document.getElementById("appContent");
+
         //INIT
         e.preventDefault()
         e.dataTransfer.effectAllowed = "move";
         
         //CALCUL DIFF
         const {initX, initY} = this.state.deltaPosition;  
-        var diffX = e.pageX - initX;
-        var diffY = e.pageY - initY;
-        var dateViewerX = this.state.dateViewer.initX + diffX;
+        var diffX = (e.pageX - initX) + (appContent.scrollLeft - this.state.initScroll.initX);
+        var diffY = (e.pageY - initY);
+        var dateViewerX = this.state.dateViewer.initX + (e.pageX - initX) ;
 
         //SET STATE
         if (e.pageX !== 0 && e.pageY !==0){
@@ -75,6 +79,24 @@ class RoadmapItem extends React.PureComponent{
                 }; 
             })
         }
+
+        //SCROLL MANAGEMENT MIN X
+        const overflowDiffMin = e.clientX - (appContent.offsetLeft + 210)
+        if(overflowDiffMin < 0 ){
+
+            //UPDATE SCROLL
+            appContent.scroll(appContent.scrollLeft - 5,0)
+
+        }else{
+
+            //SCROLL MANAGEMENT MAX X SEULEMENT SI VERS LA DROITE
+            if(this.state.deltaWidth.initX - e.clientX > 0 ){
+                const overflowDiffMax = (e.clientX + this.state.itemWidth) - (document.body.clientWidth - 30)
+                if(overflowDiffMax > 0 ){
+                    appContent.scroll(appContent.scrollLeft + 5,0)
+                }
+            }
+        }
     };
 
     //GET X AND Y POSITION OF RESIZED ELEMENT ----------------------------------------------------------------------
@@ -84,11 +106,14 @@ class RoadmapItem extends React.PureComponent{
         e.preventDefault()
         e.dataTransfer.effectAllowed = "move";
 
+        ///APP CONTENT ELEMENT
+        const appContent = document.getElementById("appContent");
+
         //INIT
         const {initX, initWidth} = this.state.deltaWidth;
-        var diffX = e.pageX - initX;
+        var diffX = e.pageX - initX + (appContent.scrollLeft - this.state.initScroll.initX);
         var newWidth =  initWidth + diffX;
-        var dateViewerX = this.state.dateViewer.initX + diffX;
+        var dateViewerX = this.state.dateViewer.initX + e.pageX - initX ;
             
         //SET SEULEMETN SI SUP A 0
         if(newWidth > 0 ){
@@ -103,6 +128,23 @@ class RoadmapItem extends React.PureComponent{
                     itemWidth:newWidth
                 }; 
             })
+        }
+
+        //SCROLL MANAGEMENT MIN X
+        const overflowDiffMin = e.clientX - (appContent.offsetLeft + 210)
+        if(overflowDiffMin < 0 ){
+
+            //UPDATE SCROLL
+            appContent.scroll(appContent.scrollLeft - 5,0)
+
+        }else{
+            //SCROLL MANAGEMENT MAX X SEULEMENT SI VERS LA DROITE
+            if(initX - e.clientX < 0 ){
+                const overflowDiffMax = e.clientX  - (document.body.clientWidth - 30)
+                if(overflowDiffMax > 0 ){
+                    appContent.scroll(appContent.scrollLeft + 5,0)
+                }
+            }
         }
     };
 
@@ -127,6 +169,9 @@ class RoadmapItem extends React.PureComponent{
         var ctr = document.getElementById("dragShadow");
         e.dataTransfer.setDragImage(ctr, 0, 0);
 
+        //APPCONTENT ELEMENT
+        const appContent = document.getElementById("appContent");
+
         //TEST TYPE
         if(type === "resize"){
 
@@ -143,11 +188,15 @@ class RoadmapItem extends React.PureComponent{
                 let limit ={...prevState.limit};
                 limit.right = limitRight;
                 limit.rectifRight = limitRectifRight;
+                let initScroll = {...prevState.initScroll};
+                initScroll.initX = appContent.scrollLeft;
+                initScroll.initY = appContent.scrollTop;
                 return { 
                     isOnDrag:true, 
                     stopTransition: true, 
                     itemWidth: item.width,
                     deltaWidth,
+                    initScroll,
                     limit,
                     dateViewer: {
                         initX: dateViewerX,
@@ -173,11 +222,15 @@ class RoadmapItem extends React.PureComponent{
                 limit.rectifLeft = e.pageX - dateViewerX;
                 limit.right = limitRight - item.width  ;
                 limit.rectifRight = e.pageX - dateViewerX;
+                let initScroll = {...prevState.initScroll};
+                initScroll.initX = appContent.scrollLeft;
+                initScroll.initY = appContent.scrollTop;
                 return { 
                     isOnDrag:true, 
                     stopTransition: true, 
                     itemWidth: item.width,
                     limit,
+                    initScroll,
                     deltaPosition,
                     dateViewer: {
                         initX: dateViewerX,
@@ -192,14 +245,8 @@ class RoadmapItem extends React.PureComponent{
     //ON MOVE STOP -----------------------------------------------------------------------------------------
     onMoveStop = (type, itemId) => {
     
-
-
         //INIT
         var options={};
-
-        //TEST IF OUT OF LIMIT AND GENERATE PREVIOUS YEAR OF NEXT YEAR
-        //if(e.pageX !==0 && (e.pageX + document.getElementById("appContent").scrollLeft) <= (this.state.limit.right + this.state.limit.rectifRight)){
-
 
         //RESIZE FINISH TASK
         if(type === "resize"){

@@ -19,6 +19,7 @@ class RoadmapGroup extends React.PureComponent{
             contextMenuY:0,
             mouseX:0,
             mouseY:0,
+            autoScrollX: {isDown: false, startX:0, scrollLeft:0} 
         }
         this.resetContextMenu = this.resetContextMenu.bind(this);
     }
@@ -66,6 +67,69 @@ class RoadmapGroup extends React.PureComponent{
         e.dataTransfer.dropEffect = "move";
     }
 
+    /////////////////////////////
+    /// AUTO SCROLL WITH DRAG ///
+    /////////////////////////////
+
+    //DARG START
+    onDragStart = (e) => {
+
+        //SI RIGHT CLICK
+        if(e.button !== 0 ) return;
+
+        //INIT
+        e.preventDefault();
+
+        //AJouter
+        const appContent = document.getElementById("appContent");
+        appContent.classList.add('grabbing');
+
+        
+        this.setState(prevState => {
+            let autoScrollX = {...prevState.autoScrollX}
+            autoScrollX.isDown = true;
+            autoScrollX.startX = e.pageX - appContent.offsetLeft;
+            autoScrollX.scrollLeft = appContent.scrollLeft;
+            return { autoScrollX };
+        });
+
+    }
+
+    //ON DRAG
+    onDragScroll = (e) => {
+
+        //SORTIR SI PAS ACTIVE
+        if(!this.state.autoScrollX.isDown) return;
+        const appContent = document.getElementById("appContent");
+
+        //INIT
+        e.preventDefault();
+        const x = e.pageX - appContent.offsetLeft;
+        const walkX = (x - this.state.autoScrollX.startX) * 4; //scroll-fast
+        appContent.scrollLeft = this.state.autoScrollX.scrollLeft - walkX;
+
+    }
+
+    //DRAG STOP
+    onDragStop = () => {
+
+        //SORTIR SI PAS ACTIVE
+        if(!this.state.autoScrollX.isDown) return;
+
+        //AJouter
+        const appContent = document.getElementById("appContent");
+        appContent.classList.remove('grabbing');
+
+        //STATE
+        this.setState(prevState => {
+            let autoScrollX = {...prevState.autoScrollX}
+            autoScrollX.isDown = false;
+            return { autoScrollX };
+        });
+
+    }
+
+
     ////////////////////////////////
     /// ROADMAP COMPONENT RENDER ///
     ////////////////////////////////
@@ -96,9 +160,10 @@ class RoadmapGroup extends React.PureComponent{
         return(
             <div 
                 className="roadmapContentGroup" 
-                onMouseDown={null}
-                onMouseMove={null}
-                onMouseUp={null}
+                onMouseDown={(e) => this.onDragStart(e)}
+                onMouseMove={(e) => this.onDragScroll(e)}
+                onMouseUp={() => this.onDragStop()}
+                onMouseLeave={() => this.onDragStop()}
             >
 
                     <div 

@@ -96,6 +96,8 @@ class App extends React.Component{
   /////////////////////////////////////////////                            
   updateRoadmapData(ids, object, option){
 
+    console.log("hello")
+
     //GET ALL OBJECTS ATTRIBUTS TO UPDATE
     var attributs;
     if(object){attributs = Object.keys(object);}
@@ -273,7 +275,6 @@ class App extends React.Component{
         let prevRoadmapData = [...prevState.roadmapData];
         let roadmapData;
         let roadmapPeriod = {...prevState.roadmapPeriod}
-        console.log(roadmapPeriod)
 
         //RESIZE ----------------------------------------------
         if(type === "resize"){
@@ -449,7 +450,6 @@ class App extends React.Component{
       
       //UPDATE ITEM COLOR  -----------------------------------------------------------------------------------
       case "roadmapItemColor":
-        console.log(options)
         this.updateRoadmapData(
           options.itemId, 
           options.colorsOject,

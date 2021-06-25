@@ -32,7 +32,7 @@ export function ContextMenu ({
 
         //INTEGRATION OPTION PLUS GESTION DU SCROLL HORIZONTAL
         var groupOptions = {
-          mouseX : mouseX + document.getElementById("appContent").scrollLeft - groupRect.left, 
+          mouseX : mouseX - groupRect.left, 
           mouseY : mouseY - groupRect.top, 
           groupKey : item.key
         }

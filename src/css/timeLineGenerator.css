@@ -5,6 +5,10 @@ body {
  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 a{text-decoration: none;}
 a:hover{text-decoration: none;}
 
@@ -41,11 +45,11 @@ a:hover{text-decoration: none;}
   --color-migso-blue-hover:#0297C6;
   --color-migso-yeallow:#fcc708;
 
-
-
   }
 
-
+.grabbing{
+  cursor:grabbing;
+}
   
 /* IMPORT -------------------------------------------------------------------------*/
  
@@ -707,7 +711,10 @@ amplify-sign-out {
   width:100%;
 }
 
-
+.data-grid-container .data-grid .cell > input{
+  height: 21px !important;
+  width:100%  !important;
+}
 
 /* ROADMAP CORE -------------------------------------------------------------------------- */
 
@@ -729,7 +736,7 @@ amplify-sign-out {
 }
 .roadmapContentGroup{
   border-bottom: 1px solid var(--border-color-gray-2);
-  position:relative;
+  position:inherit;
   width:fit-content;
   z-index: 1;
 }

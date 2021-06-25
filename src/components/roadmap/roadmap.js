@@ -55,7 +55,9 @@ class Roadmap extends React.Component{
 
             }
         }else{
-            this.resetSelectedItem(e);
+            if(e.button === 0){
+                this.resetSelectedItem(e);
+            }
         }
     }
 
