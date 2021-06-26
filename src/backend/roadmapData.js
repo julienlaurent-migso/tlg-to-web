@@ -60,7 +60,9 @@ const ROADMAP_TOP_POSITION = (data, userSettings) =>{
             if(transformedData[j].group !== currentGroup){
 
                 //CUMU TOP
-                if(j !== 0){cumuTopGroup = cumuTopGroup + virtualLineTab[0].top + userSettings.roadmapItemSpaceLine + userSettings.roadmapItemHeight;}
+                if(j !== 0 && virtualLineTab){
+                    cumuTopGroup = cumuTopGroup + virtualLineTab[0].top + userSettings.roadmapItemSpaceLine + userSettings.roadmapItemHeight;
+                }
 
                 //TOP AND RESET
                 topPosition = userSettings.roadmapItemSpaceLine;
@@ -718,6 +720,26 @@ export const ROADMAP_DATA_ADD_ITEM = (data, roadmapFirstYear,roadmapMonthWidth, 
     var transformedData = data;
     var transformedItem = JSON.parse(JSON.stringify(item));
 
+    /////////////////////////
+    /// TROUVER LE DIFF X ///
+    /////////////////////////
+
+    //ADD NORMAL
+    var diffX = options.mouseX
+
+    //ADD WITH COPY
+    if(!specific){
+
+        //TRI PAR DATE DE DEB
+        transformedItem.sort(function(a, b){
+            if(a.start < b.start) { return -1; }
+            if(a.start > b.start) { return 1; }
+            return 0;
+        })
+        
+        //CALCUL
+        diffX = options.mouseX - transformedItem[0].left
+    }
 
     //////////////////////////////
     /// GROUP LEVEL MANAGEMENT ///
@@ -776,11 +798,18 @@ export const ROADMAP_DATA_ADD_ITEM = (data, roadmapFirstYear,roadmapMonthWidth, 
         //TEST SI TASK 
         if(transformedItem[i].type === APP_ITEM_TYPES.task || transformedItem[i].type === APP_ITEM_TYPES.consoTask){
 
+            //IF ADD OR COPY
+            if(specific){
+                transformedItem[i].leftStart = diffX ;
+                transformedItem[i].leftFinish = diffX + transformedItem[i].width ;
+            }else{
+                transformedItem[i].leftStart = transformedItem[i].leftStart + diffX ;
+                transformedItem[i].leftFinish = transformedItem[i].leftFinish + diffX;
+            }
+
             //RECALCUL DES LEFT POSITION
-            transformedItem[i].leftStart = options.mouseX;
             transformedItem[i].leftBaselineStart = transformedItem[i].leftStart;
             transformedItem[i].left =  transformedItem[i].leftStart;
-            transformedItem[i].leftFinish = options.mouseX + transformedItem[i].width;
             transformedItem[i].leftBaselineFinish = transformedItem[i].leftFinish;
             transformedItem[i].right =  transformedItem[i].leftFinish;
 
@@ -799,8 +828,14 @@ export const ROADMAP_DATA_ADD_ITEM = (data, roadmapFirstYear,roadmapMonthWidth, 
 
         }else{
 
+            //IF ADD OR COPY
+            if(specific){
+                transformedItem[i].leftFinish = diffX;
+            }else{
+                transformedItem[i].leftFinish = transformedItem[i].leftFinish + diffX;
+            }
+
             //RECALCUL DES LEFT POSITION
-            transformedItem[i].leftFinish = options.mouseX;
             transformedItem[i].leftStart = transformedItem[i].leftFinish;
             transformedItem[i].leftBaselineStart = transformedItem[i].leftFinish;
             transformedItem[i].leftBaselineFinish = transformedItem[i].leftFinish;
@@ -843,7 +878,7 @@ export const ROADMAP_DATA_MOVE_ITEM = (data, roadmapFirstYear, roadmapMonthWidth
 
     //INIT
     var transformedData = data;
-    var transformedItem = JSON.parse(JSON.stringify(item));;
+    var transformedItem = item;
 
     /////////////////////////
     /// TROUVER LE DIFF X ///
@@ -853,7 +888,7 @@ export const ROADMAP_DATA_MOVE_ITEM = (data, roadmapFirstYear, roadmapMonthWidth
     transformedItem.sort(function(a, b){
         if(a.start < b.start) { return -1; }
         if(a.start > b.start) { return 1; }
-    return 0;
+        return 0;
     })
 
     //CALCUL
@@ -956,11 +991,15 @@ export const ROADMAP_DATA_MOVE_ITEM = (data, roadmapFirstYear, roadmapMonthWidth
 /// ROADMAP DATE RANGE //////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const ROADMAP_DATE_RANGE = (inputData, firstPeriod, lastPeriod, userSettings) =>{
+export const ROADMAP_DATE_RANGE = (inputData, firstPeriod, lastPeriod, userSettings, firstYear, currentFirstYear, roadmapMonthWidth) =>{
 
     //Init
     var data = inputData;
     var transformedData = [];
+
+    //DECALAGE
+    var diffX = (firstYear - currentFirstYear)*roadmapMonthWidth*12
+    console.log(diffX)
 
     ///////////////////////////////
     /// FIRST LOOP TO INIT DATA ///
@@ -984,6 +1023,17 @@ export const ROADMAP_DATE_RANGE = (inputData, firstPeriod, lastPeriod, userSetti
         }else{
             currentLine.display = true
         }
+
+        //RAJOUTER LE DECALLEGE DIFFX POUR TOUS
+
+
+        
+        //!!!!!!
+        //!!!!!!
+        //!!!!!!
+
+
+
 
         //PUSH
         transformedData.push(currentLine);

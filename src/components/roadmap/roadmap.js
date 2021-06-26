@@ -37,7 +37,11 @@ class Roadmap extends React.Component{
     //SELECTION START ------------------------------------------------------------------------------------------
     handleSelectionStart(e){
 
-        if(!FUNC_IS_ON_SCROLL(e.clientX, e.clientY) && e.ctrlKey){
+        //GET IF CLIENT ON SCROLL
+        var isOnScroll = FUNC_IS_ON_SCROLL(e.clientX, e.clientY);
+
+        //TEST SI CTRL
+        if(!isOnScroll && e.ctrlKey){
 
             //INIT
             e.preventDefault();
@@ -55,7 +59,7 @@ class Roadmap extends React.Component{
 
             }
         }else{
-            if(e.button === 0){
+            if(!isOnScroll && e.button === 0){
                 this.resetSelectedItem(e);
             }
         }

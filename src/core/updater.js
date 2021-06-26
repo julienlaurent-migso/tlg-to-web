@@ -13,13 +13,20 @@ export class UpdaterWithInput extends React.PureComponent{
         inputText : this.props.item.name,
         displayInput : false,
       }
+      this.sendToUpdateSource = this.sendToUpdateSource.bind(this);
     }
   
     //Display Input
-    toggleDisplay(e) {
+    toggleDisplay(e, id) {
       e.preventDefault();
       e.stopPropagation();
+      
+      //UPDATE SOURCE TO DISPLAY INPUT
       this.setState(prevState => ({displayInput: !prevState.displayInput}));
+
+      //INFORM ROADMAPGROUP THAT THERE IS A FOCUS
+      this.props.updateInputFocus("input-" + id)
+
     }
   
     //Handle Chane 
@@ -31,8 +38,12 @@ export class UpdaterWithInput extends React.PureComponent{
   
     //update TO SOURCE
     sendToUpdateSource(e, id){
+
+      //INIT
       e.preventDefault();
       e.stopPropagation();
+
+      //CLOSE INPUT
       this.setState(prevState => ({displayInput: !prevState.displayInput}));
 
       //TEST SI DIFF DU PROPS
@@ -110,9 +121,10 @@ export class UpdaterWithInput extends React.PureComponent{
             inputBox =  
             <textarea 
               rows="4"
+              key={"updaterTextarea-" + item.id}
               className="updaterInput flex-fill" 
               name={inputName} 
-              id={item.id} 
+              id={"input-" + item.id} 
               autoFocus 
               value={this.state.inputText} 
               ref={input => this.newText = input}
@@ -123,20 +135,22 @@ export class UpdaterWithInput extends React.PureComponent{
   
           //INPUT 
           case 'input':
-            inputBox =  
-            <input 
-              type="text"
-              className="updaterInput flex-fill" 
-              name={inputName} 
-              id={item.id} 
-              autoFocus 
-              value={this.state.inputText} 
-              ref={input => this.newText = input}
-              onChange={(e) => this.handleChange(e)}
-              onBlur={(e) => this.sendToUpdateSource(e, item.id)}
-            />
+            inputBox =  [
+                <input 
+                  key={"updaterInput-" + item.id}
+                  type="text"
+                  className="updaterInput flex-fill" 
+                  name={inputName} 
+                  id={"input-" + item.id} 
+                  autoFocus 
+                  value={this.state.inputText} 
+                  ref={input => this.newText = input}
+                  onChange={(e) => this.handleChange(e)}
+                  onBlur={(e) => this.sendToUpdateSource(e, item.id)}
+                />
+            ]
+            
             break;
-
 
           //BUG
           default:
@@ -145,7 +159,6 @@ export class UpdaterWithInput extends React.PureComponent{
   
         //return
         return inputBox
-  
       }
 
       //Return
@@ -158,7 +171,7 @@ export class UpdaterWithInput extends React.PureComponent{
             :
               <div 
                 onMouseDown={(e) => this.handleStopEvent(e)}
-                onDoubleClick={(e) => this.toggleDisplay(e)} 
+                onDoubleClick={(e) => this.toggleDisplay(e, item.id)} 
                 onClick={(e) => this.handleClick(e, item.id, item.action)}
                 className= "roadmapItemsContent flex-fill" 
               >
@@ -172,9 +185,6 @@ export class UpdaterWithInput extends React.PureComponent{
             </div>
           } 
         </React.Fragment>
-  
       )
-  
     }
-  
   }

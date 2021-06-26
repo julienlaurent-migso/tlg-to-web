@@ -69,6 +69,7 @@ class App extends React.Component{
     }
     this.updateState = this.updateState.bind(this);
     this.launchAppFunctions = this.launchAppFunctions.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
   //////////////////////////////////////
@@ -95,8 +96,6 @@ class App extends React.Component{
   /// UPDATE ROADMAP DATA | OBJECT | OPTION ///
   /////////////////////////////////////////////                            
   updateRoadmapData(ids, object, option){
-
-    console.log("hello")
 
     //GET ALL OBJECTS ATTRIBUTS TO UPDATE
     var attributs;
@@ -212,7 +211,7 @@ class App extends React.Component{
   updateDateRangeRoadmapData(firstPeriod, lastPeriod, firstYear, lastYear){
     this.setState(prevState => {
       let prevRoadmapData = [...prevState.roadmapData];
-      let roadmapData = ROADMAP_DATE_RANGE(prevRoadmapData, firstPeriod, lastPeriod, this.state.userSettings);
+      let roadmapData = ROADMAP_DATE_RANGE(prevRoadmapData, firstPeriod, lastPeriod, this.state.userSettings, firstYear, this.state.roadmapPeriod.roadmapFirstYear, this.state.appSettings.roadmapMonthWidth );
       let roadmapPeriod = {...prevState.roadmapPeriod};
       let appSettings = {...prevState.appSettings}
       roadmapPeriod.roadmapFirstPeriod = firstPeriod;
@@ -552,6 +551,46 @@ dragOver = (e) => {
   e.dataTransfer.dropEffect = "move";
 }
 
+////////////////////////////////////
+/// MANAGE GLOBAL KEY PRESS HERE ///
+////////////////////////////////////
+
+//IMPLEMENT EVENT WHEN COMPONENT MOUNTED
+componentDidMount() {
+  document.addEventListener('keydown', this.handleKeyPress);
+}
+
+//ERASE EVENT WHEN COMPONENT UNMOUNTED
+componentWillUnmount() {
+  document.removeEventListener('keydown', this.handleKeyPress);
+}
+
+//IF CTRL + C and selected item fire copy
+handleKeyPress(e) {
+
+  // keyCode detection & ctrl detection
+  var key = e.which || e.keyCode; 
+  var ctrl = e.ctrlKey ? e.ctrlKey : ((key === 17) ? true : false); 
+
+  //CTRL + C 
+  if ( key === 67 && ctrl ) {
+    var selectedItem = this.state.roadmapData.filter(item => item.action === "select").length
+    if(selectedItem > 0){
+      this.updateRoadmapData(
+        ["notNeeded"], 
+        {action: "copy"}, 
+        {type:"copy"}
+      )
+    }
+  }
+
+  //CTRL + V => key === 86 && ctrl  
+  //ESC => e.keyCode === 27
+
+}
+
+
+
   ////////////////////////////
   /// APP COMPONENT RENDER ///
   ////////////////////////////
@@ -573,9 +612,9 @@ dragOver = (e) => {
     ////////////////////////////
     return(
       <main id="appMain" 
-       onMouseDown={
-         this.state.appSettings.isOnEditMode 
-         && !this.state.appSettings.actionModal ? (e) => e.preventDefault() : null}
+        onMouseDown={
+          this.state.appSettings.isOnEditMode 
+          && !this.state.appSettings.actionModal ? (e) => e.preventDefault() : null}
       >
         <BrowserRouter>
 

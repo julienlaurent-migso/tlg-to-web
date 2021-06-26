@@ -62,7 +62,7 @@ class RoadmapItem extends React.PureComponent{
         //CALCUL DIFF
         const {initX, initY} = this.state.deltaPosition;  
         var diffX = (e.pageX - initX) + (appContent.scrollLeft - this.state.initScroll.initX);
-        var diffY = (e.pageY - initY);
+        var diffY = (e.pageY - initY) + (appContent.scrollTop - this.state.initScroll.initY);
         var dateViewerX = this.state.dateViewer.initX + (e.pageX - initX) ;
 
         //SET STATE
@@ -96,6 +96,12 @@ class RoadmapItem extends React.PureComponent{
                     appContent.scroll(appContent.scrollLeft + 5,0)
                 }
             }
+        }
+
+        //SCROLL TOP
+        const overFlowTop = e.clientY - (appContent.offsetTop + 30)
+        if(overFlowTop < 0 ){
+            appContent.scroll(0,appContent.scrollTop - 10)
         }
     };
 
@@ -362,7 +368,8 @@ class RoadmapItem extends React.PureComponent{
             roadmapMonthWidth,
             isOnEditMode,
             roadmapFirstYear,
-            launchAppFunctions
+            launchAppFunctions,
+            updateInputFocus
         } = this.props;
 
 
@@ -473,6 +480,7 @@ class RoadmapItem extends React.PureComponent{
                             inputName="name"
                             isTask={isTask}
                             launchAppFunctions={launchAppFunctions}
+                            updateInputFocus={updateInputFocus}
                         />
 
                         {/* RISIZER ------------------ --------------------------------- */}

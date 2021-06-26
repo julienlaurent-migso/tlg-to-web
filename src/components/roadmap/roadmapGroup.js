@@ -19,9 +19,11 @@ class RoadmapGroup extends React.PureComponent{
             contextMenuY:0,
             mouseX:0,
             mouseY:0,
-            autoScrollX: {isDown: false, startX:0, scrollLeft:0} 
+            autoScrollX: {isDown: false, startX:0, scrollLeft:0},
+            inputFocus:null
         }
         this.resetContextMenu = this.resetContextMenu.bind(this);
+        this.updateInputFocus = this.updateInputFocus.bind(this);
     }
 
     /////////////////////
@@ -67,6 +69,11 @@ class RoadmapGroup extends React.PureComponent{
         e.dataTransfer.dropEffect = "move";
     }
 
+    //UPDATE INPUT FOCUS
+    updateInputFocus(id){
+        this.setState({inputFocus:id});
+    }
+
     /////////////////////////////
     /// AUTO SCROLL WITH DRAG ///
     /////////////////////////////
@@ -76,6 +83,16 @@ class RoadmapGroup extends React.PureComponent{
 
         //SI RIGHT CLICK
         if(e.button !== 0 ) return;
+
+        //UNFOCUS INPUT CHANGE TO SEND TO SOURCE
+        if(this.state.inputFocus){
+            
+            //RECUP DE L'ITEM FOCUSED
+            const focusedInput = document.getElementById(this.state.inputFocus);
+
+            //ON VERIFIE QU'IL n'A PAS DEJA ETE BLURED
+            if(focusedInput){focusedInput.blur()}
+        }
 
         //INIT
         e.preventDefault();
@@ -90,7 +107,8 @@ class RoadmapGroup extends React.PureComponent{
             autoScrollX.isDown = true;
             autoScrollX.startX = e.pageX - appContent.offsetLeft;
             autoScrollX.scrollLeft = appContent.scrollLeft;
-            return { autoScrollX };
+            let inputFocus = false
+            return { autoScrollX , inputFocus};
         });
 
     }
@@ -242,6 +260,7 @@ class RoadmapGroup extends React.PureComponent{
                                                 roadmapMonthWidth={roadmapMonthWidth}
                                                 updateState={updateState}
                                                 launchAppFunctions={launchAppFunctions}
+                                                updateInputFocus={this.updateInputFocus}
                                             />
                                         :null}
 
