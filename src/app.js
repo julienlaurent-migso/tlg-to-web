@@ -244,7 +244,22 @@ class App extends React.Component{
       let actions = {...prevState.actions}
       actions.isItemsSelected = false;
       actions.isItemsCopied = false;
-      return { roadmapData, appSettings, actions }; 
+      let roadmapPeriod = {...prevState.roadmapPeriod}
+
+      //ONLY IF NOT ALREADY FILTERED
+      if(!roadmapPeriod.roadmapFirstPeriod){
+
+        //FIND MIN MAX YEAR
+        let minMaxDate = FUNC_ARRAY_MIN_MAX(roadmapData, "start", "finish")
+
+        //UPDATE PERIOD STATE
+        roadmapPeriod.roadmapFirstPeriod = null
+        roadmapPeriod.roadmapFirstYear = minMaxDate.min.getFullYear();
+        roadmapPeriod.roadmapLastPeriod = null
+        roadmapPeriod.roadmapLastYear = minMaxDate.max.getFullYear();
+      }
+
+      return { roadmapData, appSettings, actions, roadmapPeriod }; 
     })
   } 
 
@@ -291,7 +306,7 @@ class App extends React.Component{
 
           //TEST IS
           let isSameFirstYear = 
-            diffX < 0 ? 
+            diffX < 0  ? 
             FUNC_GET_ROADMAP_FIRST_YEAR_AFTER_MOVE(itemLeft,diffX, this.state.appSettings.roadmapMonthWidth, this.state.roadmapPeriod.roadmapFirstYear) 
             : {roadmapFirstYear: this.state.roadmapPeriod.roadmapFirstYear, addYear: false, nbYearToSub: 0};
           
@@ -305,8 +320,13 @@ class App extends React.Component{
             positionY,
             this.state.userSettings,
             isSameFirstYear.addYear,
-            isSameFirstYear.nbYearToSub
+            isSameFirstYear.nbYearToSub,
+            roadmapPeriod.roadmapFirstPeriod
           );
+        }
+
+        //ONLY IF NOT ALREADY FILTERED
+        if(!roadmapPeriod.roadmapFirstPeriod){
 
           //FIND MIN MAX YEAR
           let minMaxDate = FUNC_ARRAY_MIN_MAX(roadmapData, "start", "finish")
@@ -316,7 +336,6 @@ class App extends React.Component{
           roadmapPeriod.roadmapFirstYear = minMaxDate.min.getFullYear();
           roadmapPeriod.roadmapLastPeriod = null
           roadmapPeriod.roadmapLastYear = minMaxDate.max.getFullYear();
-
         }
 
         //RETUNR
@@ -341,7 +360,22 @@ class App extends React.Component{
       let actions = {...prevState.actions}
       actions.isItemsSelected = false;
       actions.isItemsCopied = false;
-      return { roadmapData, actions }; 
+      let roadmapPeriod = {...prevState.roadmapPeriod}
+
+        //ONLY IF NOT ALREADY FILTERED
+        if(!roadmapPeriod.roadmapFirstPeriod){
+
+          //FIND MIN MAX YEAR
+          let minMaxDate = FUNC_ARRAY_MIN_MAX(roadmapData, "start", "finish")
+
+          //UPDATE PERIOD STATE
+          roadmapPeriod.roadmapFirstPeriod = null
+          roadmapPeriod.roadmapFirstYear = minMaxDate.min.getFullYear();
+          roadmapPeriod.roadmapLastPeriod = null
+          roadmapPeriod.roadmapLastYear = minMaxDate.max.getFullYear();
+        }
+
+      return { roadmapData, actions, roadmapPeriod }; 
     })
   }
 
@@ -612,9 +646,7 @@ handleKeyPress(e) {
     ////////////////////////////
     return(
       <main id="appMain" 
-        onMouseDown={
-          this.state.appSettings.isOnEditMode 
-          && !this.state.appSettings.actionModal ? (e) => e.preventDefault() : null}
+        onMouseDown={!this.state.appSettings.actionModal ? (e) => e.preventDefault() : null}
       >
         <BrowserRouter>
 

@@ -746,19 +746,18 @@ amplify-sign-out {
   transition: all 0.5s ease 0s; 
 }
 .roadmapContentGroup{
-  border-bottom: 1px solid var(--border-color-gray-2);
-  position:inherit;
+  
   width:fit-content;
   z-index: 1;
 }
-.roadmapContentGroup:last-child{
-  border-bottom: none;
-}
+
 .roadmapGroup{
   width:fit-content;
   position: relative;
   transition: all 0.5s ease 0s; 
+  border-bottom: 1px solid var(--border-color-gray-2);
 }
+
 .roadmapGroupSelected{
   border: 2px solid green 
 }
@@ -788,7 +787,7 @@ amplify-sign-out {
   background-color: white;
   position: sticky;
   left:0;
-  z-index:51;
+  z-index:52;
   border-right: 1px solid var(--border-color-gray-2);
 }
 .roadmapRightSide{

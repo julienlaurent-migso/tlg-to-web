@@ -195,6 +195,7 @@ class RoadmapGroup extends React.PureComponent{
                         {/* LEFT SIDE GROUP NAME -------------------------------------------------------------- */}
                         <div 
                             className="roadmapLeftSide" 
+                            onDragOver={(e) => this.dragOver(e)}
                             style={{
                                 minWidth: APP_STANDARDS.roadmapGroupWidth + "px",
                                 maxWidth: APP_STANDARDS.roadmapGroupWidth + "px"

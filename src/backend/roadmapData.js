@@ -527,7 +527,8 @@ export const ROADMAP_DATA_DRAG_DROP = (
     itemTopPosition,
     userSettings,
     addYear,
-    nbYearToSub
+    nbYearToSub,
+    isFiltered
 ) =>{
 
     //INIT
@@ -548,9 +549,9 @@ export const ROADMAP_DATA_DRAG_DROP = (
         transformedData[itemIndex].leftFinish = transformedData[itemIndex].leftFinish + diffX
         if(transformedData[itemIndex].leftStart){transformedData[itemIndex].leftStart = transformedData[itemIndex].leftStart + diffX};
 
-        //RECTIF IF ADD YEAR
-        if(addYear){
-
+        //RECTIF IF ADD YEAR SI PAS FILTRE
+        if(addYear && !isFiltered){
+           
             //TEST SI TASK 
             if(transformedData[itemIndex].type === APP_ITEM_TYPES.task || transformedData[itemIndex].type === APP_ITEM_TYPES.consoTask){
                 transformedData[itemIndex].leftStart = nbYearToSub*(roadmapMonthWidth*12) + transformedData[itemIndex].leftStart
@@ -558,7 +559,11 @@ export const ROADMAP_DATA_DRAG_DROP = (
             }else{
                 transformedData[itemIndex].leftFinish = nbYearToSub*(roadmapMonthWidth*12) + transformedData[itemIndex].leftFinish 
             }
+
         }
+
+        //SI FILTER EN COURS ALORS DISPLAY FALSE
+        if(addYear && isFiltered){transformedData[itemIndex].display = false}
         
         //TEST SI TASK 
         if(transformedData[itemIndex].type === APP_ITEM_TYPES.task || transformedData[itemIndex].type === APP_ITEM_TYPES.consoTask){
@@ -636,7 +641,7 @@ export const ROADMAP_DATA_DRAG_DROP = (
         let nbYearDiff = roadmapFirstYear - minDate.getFullYear()
 
         //REPOSITIONNEMENT DES ITEMS
-        if(addYear || nbYearDiff < 0){
+        if((addYear || nbYearDiff < 0) && !isFiltered){
 
             transformedData = transformedData.map(item => {
 
@@ -1024,16 +1029,56 @@ export const ROADMAP_DATE_RANGE = (inputData, firstPeriod, lastPeriod, userSetti
             currentLine.display = true
         }
 
-        //RAJOUTER LE DECALLEGE DIFFX POUR TOUS
+        ////////////////////////////////////
+        /// TEST IF WE NEED TO MOVE DATA ///
+        ////////////////////////////////////
+
+        //ONLY IF DIFFX DIFF 0
+        if(diffX !== 0){
+
+            //ALL NEED TO BE RERENDERED
+            currentLine.updateTracker = currentLine.updateTracker + 1;
 
 
-        
-        //!!!!!!
-        //!!!!!!
-        //!!!!!!
+            //RAJOUTER LE DECALLEGE DIFFX POUR TOUS
+            currentLine.leftFinish = currentLine.leftFinish - diffX
+            if(currentLine.leftStart){currentLine.leftStart = currentLine.leftStart - diffX};
 
+            //TEST SI TASK 
+            if(currentLine.type === APP_ITEM_TYPES.task || currentLine.type === APP_ITEM_TYPES.consoTask){
 
+                //UPDATE LEFT
+                currentLine.left = currentLine.leftStart
+                if(currentLine.optionShadow && currentLine.leftBaselineStart && currentLine.leftBaselineStart < currentLine.leftStart){
+                    currentLine.left = currentLine.leftBaselineStart
+                }
+                
+                //UPDATE RIGHT & WIDTH
+                currentLine.right = currentLine.leftFinish
+                currentLine.width = currentLine.right - currentLine.left
+                if(currentLine.optionShadow && currentLine.leftBaselineFinish && currentLine.leftBaselineFinish > currentLine.leftFinish){
+                    currentLine.right = currentLine.leftBaselineFinish
+                    currentLine.width = currentLine.right - currentLine.left
+                }
 
+            }else{
+                
+                //LEFT LOGO + TXT
+                currentLine.left = currentLine.leftFinish - (userSettings.roadmapItemHeight / 2)
+                if(currentLine.optionShadow && currentLine.leftBaselineFinish && currentLine.leftBaselineFinish > currentLine.leftFinish){
+                    currentLine.left = currentLine.leftBaselineFinish - (userSettings.roadmapItemHeight / 2)
+                }
+
+                //WIDTH
+                currentLine.width = userSettings.roadmapItemHeight + currentLine.txtWidth
+
+                //TEST IF OPTION LABEL TRUE
+                if(currentLine.optionLabel){currentLine.left = currentLine.left - currentLine.txtWidth}
+
+                //RIGHT
+                currentLine.right = currentLine.left + currentLine.width
+            }
+        }
 
         //PUSH
         transformedData.push(currentLine);

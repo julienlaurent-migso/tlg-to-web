@@ -369,10 +369,8 @@ class RoadmapItem extends React.PureComponent{
             isOnEditMode,
             roadmapFirstYear,
             launchAppFunctions,
-            updateInputFocus
+            updateInputFocus,
         } = this.props;
-
-
 
         //IS TASK
         var isTask = item.type === APP_ITEM_TYPES.task || item.type === APP_ITEM_TYPES.consotask;
@@ -411,7 +409,7 @@ class RoadmapItem extends React.PureComponent{
         /////////////////////////////////////
         /// ROADMAP ITEM COMPONENT RETURN ///
         /////////////////////////////////////
-        return(
+        return (
             <React.Fragment key={"item-displayed-" + item.id}>
 
                 {/* DRAGGABLE CONTENT, DO NOT INCLUDE DATEVIEWER / MODAL INFO / CONTEXT MENU ----------------------------- */}
